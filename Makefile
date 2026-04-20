@@ -1,5 +1,7 @@
 HOST ?= 0.0.0.0
 PORT ?= 3000
+CERT ?= certificates/localhost.pem
+KEY  ?= certificates/localhost-key.pem
 
 .PHONY: dev dev-http build start lint install lan-ip help
 
@@ -16,7 +18,10 @@ help:
 	@echo "Override host/port: make dev HOST=192.168.1.42 PORT=4000"
 
 dev:
-	npx next dev --experimental-https -H $(HOST) -p $(PORT)
+	npx next dev --experimental-https \
+		--experimental-https-cert $(CERT) \
+		--experimental-https-key $(KEY) \
+		-H $(HOST) -p $(PORT)
 
 dev-http:
 	npx next dev -H $(HOST) -p $(PORT)
