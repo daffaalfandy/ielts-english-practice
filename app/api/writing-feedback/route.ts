@@ -4,7 +4,7 @@ import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, response, task } = await req.json();
+    const { prompt, response, task, visualData } = await req.json();
 
     if (!response || !prompt) {
       return Response.json(
@@ -13,17 +13,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const chartSection = visualData
+      ? `\n\nChart data (the candidate must describe this):\n\`\`\`json\n${JSON.stringify(visualData, null, 2)}\n\`\`\``
+      : "";
+
+    const userContent = `IELTS Writing Task ${task || 2} Prompt: "${prompt}"${chartSection}\n\nStudent's response:\n${response}`;
+
     const stream = await getClient().chat.completions.create({
       model: getModel(),
-      max_tokens: 2048,
+      max_tokens: 3072,
       stream: true,
       response_format: { type: "json_object" },
       messages: [
         { role: "system", content: WRITING_FEEDBACK_PROMPT },
-        {
-          role: "user",
-          content: `IELTS Writing Task ${task || 2} Prompt: "${prompt}"\n\nStudent's response:\n${response}`,
-        },
+        { role: "user", content: userContent },
       ],
     });
 

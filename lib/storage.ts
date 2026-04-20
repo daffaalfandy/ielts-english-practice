@@ -20,7 +20,7 @@ export interface WritingFeedback {
   };
   strengths: string[];
   improvements: string[];
-  corrected_paragraph: string;
+  band7_model_answer: string;
   vocabulary_suggestions: {
     original: string;
     better: string;
@@ -36,7 +36,7 @@ export interface SpeakingFeedback {
   vocabulary_comment: string;
   grammar_comment: string;
   coherence_comment: string;
-  model_answer_opening: string;
+  band7_model_answer: string;
   useful_phrases: string[];
   grammar_errors_found: { error: string; correction: string }[];
 }
@@ -46,7 +46,11 @@ export interface SpeakingPart1Feedback {
   fluency_comment: string;
   vocabulary_comment: string;
   grammar_comment: string;
-  per_question: { question: string; brief_comment: string }[];
+  per_question: {
+    question: string;
+    brief_comment: string;
+    band7_model_answer: string;
+  }[];
   natural_phrases_to_use: string[];
   grammar_errors_found: { error: string; correction: string }[];
 }
@@ -57,7 +61,11 @@ export interface SpeakingPart3Feedback {
   vocabulary_comment: string;
   grammar_comment: string;
   reasoning_comment: string;
-  per_question: { question: string; idea_development_comment: string }[];
+  per_question: {
+    question: string;
+    idea_development_comment: string;
+    band7_model_answer: string;
+  }[];
   discourse_markers_to_use: string[];
   grammar_errors_found: { error: string; correction: string }[];
 }
@@ -137,6 +145,25 @@ export interface GrammarSession {
   feedback: GrammarFeedback;
 }
 
+export interface DrillExercise {
+  sentence: string;      // with "___" in place of the blank/error
+  correct: string;
+  alternatives: string[]; // 3 distractors — full set of options is correct + alternatives shuffled
+  rule: string;
+  explanation: string;
+  category: string;      // which focus category this drill targets
+}
+
+export interface DrillSession {
+  id: string;
+  type: "drill";
+  timestamp: number;
+  focusCategories: string[];
+  exercises: DrillExercise[];
+  answers: string[];     // user-chosen answers, same length as exercises
+  score: number;         // number correct
+}
+
 export interface GrammarFeedback {
   corrected_text: string;
   errors: {
@@ -152,7 +179,8 @@ export interface GrammarFeedback {
 export type PracticeSession =
   | WritingSession
   | SpeakingSession
-  | GrammarSession;
+  | GrammarSession
+  | DrillSession;
 
 const STORAGE_KEY = "ielts-practice-sessions";
 
@@ -198,6 +226,12 @@ export function getSpeakingSessions(): SpeakingSession[] {
 export function getGrammarSessions(): GrammarSession[] {
   return getSessions().filter(
     (s): s is GrammarSession => s.type === "grammar"
+  );
+}
+
+export function getDrillSessions(): DrillSession[] {
+  return getSessions().filter(
+    (s): s is DrillSession => s.type === "drill"
   );
 }
 

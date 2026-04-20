@@ -1,8 +1,55 @@
+export interface BarVisualData {
+  type: "bar";
+  title: string;
+  yAxisLabel: string;
+  xAxisLabel?: string;
+  series: string[];
+  stacked?: boolean;
+  data: Array<{ category: string } & Record<string, number | string>>;
+}
+
+export interface LineVisualData {
+  type: "line";
+  title: string;
+  yAxisLabel: string;
+  xAxisLabel?: string;
+  series: string[];
+  data: Array<{ period: string } & Record<string, number | string>>;
+}
+
+export interface PieVisualData {
+  type: "pie";
+  title: string;
+  /**
+   * One or more pies. Single-pie charts use a one-entry series;
+   * multi-pie charts (e.g. "2000 vs 2020") supply one entry per pie.
+   * All pies should share the same category names so the legend is consistent.
+   */
+  series: Array<{
+    label: string;
+    data: Array<{ name: string; value: number }>;
+  }>;
+}
+
+export interface TableVisualData {
+  type: "table";
+  title: string;
+  columns: string[];
+  rows: Array<Array<string | number>>;
+}
+
+export type Task1VisualData =
+  | BarVisualData
+  | LineVisualData
+  | PieVisualData
+  | TableVisualData;
+
 export interface WritingPrompt {
   id: string;
   task: 1 | 2;
   prompt: string;
   minWords: number;
+  visualData?: Task1VisualData;
 }
 
 export type SpeakingTheme =
@@ -37,6 +84,27 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The graph below shows the average monthly temperatures in three cities over one year. Summarise the information by selecting and reporting the main features.",
     minWords: 150,
+    visualData: {
+      type: "line",
+      title: "Average monthly temperatures (°C) in three cities",
+      yAxisLabel: "Temperature (°C)",
+      xAxisLabel: "Month",
+      series: ["London", "Sydney", "Dubai"],
+      data: [
+        { period: "Jan", London: 5, Sydney: 23, Dubai: 19 },
+        { period: "Feb", London: 6, Sydney: 23, Dubai: 20 },
+        { period: "Mar", London: 8, Sydney: 21, Dubai: 23 },
+        { period: "Apr", London: 11, Sydney: 18, Dubai: 27 },
+        { period: "May", London: 14, Sydney: 15, Dubai: 32 },
+        { period: "Jun", London: 17, Sydney: 12, Dubai: 35 },
+        { period: "Jul", London: 19, Sydney: 11, Dubai: 37 },
+        { period: "Aug", London: 19, Sydney: 13, Dubai: 37 },
+        { period: "Sep", London: 16, Sydney: 16, Dubai: 34 },
+        { period: "Oct", London: 12, Sydney: 18, Dubai: 30 },
+        { period: "Nov", London: 8, Sydney: 20, Dubai: 25 },
+        { period: "Dec", London: 6, Sydney: 22, Dubai: 21 },
+      ],
+    },
   },
   {
     id: "t1-2",
@@ -44,6 +112,36 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The pie charts below show the percentage of household income spent on different categories in 2000 and 2020. Summarise the information and make comparisons.",
     minWords: 150,
+    visualData: {
+      type: "pie",
+      title: "Household income spent by category — 2000 vs 2020",
+      series: [
+        {
+          label: "2000",
+          data: [
+            { name: "Housing", value: 28 },
+            { name: "Food", value: 22 },
+            { name: "Transport", value: 15 },
+            { name: "Healthcare", value: 8 },
+            { name: "Leisure", value: 12 },
+            { name: "Savings", value: 10 },
+            { name: "Other", value: 5 },
+          ],
+        },
+        {
+          label: "2020",
+          data: [
+            { name: "Housing", value: 35 },
+            { name: "Food", value: 16 },
+            { name: "Transport", value: 14 },
+            { name: "Healthcare", value: 12 },
+            { name: "Leisure", value: 10 },
+            { name: "Savings", value: 6 },
+            { name: "Other", value: 7 },
+          ],
+        },
+      ],
+    },
   },
   {
     id: "t1-3",
@@ -51,6 +149,18 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The bar chart below shows the number of international students enrolled in undergraduate and postgraduate programmes at a UK university between 2005 and 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "International students at a UK university (2005–2020)",
+      yAxisLabel: "Number of students",
+      series: ["Undergraduate", "Postgraduate"],
+      data: [
+        { category: "2005", Undergraduate: 1200, Postgraduate: 450 },
+        { category: "2010", Undergraduate: 1800, Postgraduate: 620 },
+        { category: "2015", Undergraduate: 2200, Postgraduate: 850 },
+        { category: "2020", Undergraduate: 2500, Postgraduate: 1100 },
+      ],
+    },
   },
   {
     id: "t1-4",
@@ -58,6 +168,21 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The line graph below illustrates the total amount of electricity generated from renewable sources in four European countries between 2000 and 2022. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
+    visualData: {
+      type: "line",
+      title: "Renewable electricity generation (TWh) — 2000 to 2022",
+      yAxisLabel: "Electricity (TWh)",
+      xAxisLabel: "Year",
+      series: ["Germany", "Spain", "UK", "France"],
+      data: [
+        { period: "2000", Germany: 35, Spain: 20, UK: 10, France: 70 },
+        { period: "2005", Germany: 65, Spain: 40, UK: 15, France: 75 },
+        { period: "2010", Germany: 105, Spain: 90, UK: 26, France: 80 },
+        { period: "2015", Germany: 195, Spain: 105, UK: 85, France: 90 },
+        { period: "2020", Germany: 250, Spain: 140, UK: 135, France: 110 },
+        { period: "2022", Germany: 265, Spain: 160, UK: 150, France: 125 },
+      ],
+    },
   },
   {
     id: "t1-5",
@@ -65,20 +190,18 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The table below provides information about the percentage of households with access to the internet in five different countries in 2005, 2012, and 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
-  },
-  {
-    id: "t1-6",
-    task: 1,
-    prompt:
-      "The diagram below shows the process by which recycled paper is produced from waste paper collected from households and offices. Summarise the information by selecting and reporting the main features.",
-    minWords: 150,
-  },
-  {
-    id: "t1-7",
-    task: 1,
-    prompt:
-      "The two maps below show the layout of a coastal town in 1990 and in 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
-    minWords: 150,
+    visualData: {
+      type: "table",
+      title: "Households with internet access (%)",
+      columns: ["Country", "2005", "2012", "2020"],
+      rows: [
+        ["South Korea", 92, 97, 99],
+        ["United Kingdom", 60, 83, 96],
+        ["Brazil", 17, 41, 83],
+        ["India", 3, 15, 60],
+        ["Nigeria", 1, 11, 42],
+      ],
+    },
   },
   {
     id: "t1-8",
@@ -86,6 +209,20 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The bar chart below shows the proportion of male and female workers employed in six different sectors of the economy in one country in 2021. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "Workforce by sector and gender (2021)",
+      yAxisLabel: "Percentage of sector workforce (%)",
+      series: ["Male", "Female"],
+      data: [
+        { category: "Construction", Male: 88, Female: 12 },
+        { category: "Manufacturing", Male: 72, Female: 28 },
+        { category: "Finance", Male: 55, Female: 45 },
+        { category: "Retail", Male: 42, Female: 58 },
+        { category: "Education", Male: 30, Female: 70 },
+        { category: "Healthcare", Male: 22, Female: 78 },
+      ],
+    },
   },
   {
     id: "t1-9",
@@ -93,13 +230,20 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The line graph below shows the average daily consumption of bottled water per person in four countries between 2000 and 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
-  },
-  {
-    id: "t1-10",
-    task: 1,
-    prompt:
-      "The diagram below illustrates the life cycle of the salmon, from egg to adult fish. Summarise the information by selecting and reporting the main features.",
-    minWords: 150,
+    visualData: {
+      type: "line",
+      title: "Daily bottled water consumption per person (litres)",
+      yAxisLabel: "Litres per person per day",
+      xAxisLabel: "Year",
+      series: ["Mexico", "Italy", "USA", "Japan"],
+      data: [
+        { period: "2000", Mexico: 0.35, Italy: 0.42, USA: 0.2, Japan: 0.08 },
+        { period: "2005", Mexico: 0.5, Italy: 0.5, USA: 0.32, Japan: 0.12 },
+        { period: "2010", Mexico: 0.68, Italy: 0.54, USA: 0.4, Japan: 0.18 },
+        { period: "2015", Mexico: 0.78, Italy: 0.51, USA: 0.45, Japan: 0.24 },
+        { period: "2020", Mexico: 0.84, Italy: 0.49, USA: 0.5, Japan: 0.3 },
+      ],
+    },
   },
   {
     id: "t1-11",
@@ -107,6 +251,24 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The table below gives information about the number of tourists visiting five major cities in Asia in 2010 and 2020, along with the average length of stay. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
+    visualData: {
+      type: "table",
+      title: "Tourist arrivals and average length of stay — 5 Asian cities",
+      columns: [
+        "City",
+        "Tourists 2010 (millions)",
+        "Tourists 2020 (millions)",
+        "Avg. stay 2010 (nights)",
+        "Avg. stay 2020 (nights)",
+      ],
+      rows: [
+        ["Bangkok", 15.9, 21.5, 4.1, 4.8],
+        ["Singapore", 11.6, 14.2, 3.6, 3.4],
+        ["Tokyo", 8.6, 12.8, 5.2, 4.5],
+        ["Hong Kong", 20.1, 17.0, 3.2, 2.8],
+        ["Seoul", 8.7, 13.1, 4.0, 4.2],
+      ],
+    },
   },
   {
     id: "t1-12",
@@ -114,6 +276,19 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The bar chart below shows the amount of money spent on five different leisure activities by men and women in one country in 2019. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "Monthly leisure spending by gender (2019)",
+      yAxisLabel: "Average spending (USD)",
+      series: ["Men", "Women"],
+      data: [
+        { category: "Dining out", Men: 180, Women: 150 },
+        { category: "Sports & fitness", Men: 95, Women: 110 },
+        { category: "Cinema & theatre", Men: 40, Women: 55 },
+        { category: "Travel", Men: 210, Women: 240 },
+        { category: "Hobbies", Men: 70, Women: 65 },
+      ],
+    },
   },
   {
     id: "t1-13",
@@ -121,13 +296,21 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The line graph below shows the birth rates in Japan, Germany, and Brazil from 1970 to 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
-  },
-  {
-    id: "t1-14",
-    task: 1,
-    prompt:
-      "The diagram below shows how solar panels are used to generate electricity for a typical household. Summarise the information by selecting and reporting the main features.",
-    minWords: 150,
+    visualData: {
+      type: "line",
+      title: "Birth rate per 1,000 population (1970–2020)",
+      yAxisLabel: "Births per 1,000 people",
+      xAxisLabel: "Year",
+      series: ["Japan", "Germany", "Brazil"],
+      data: [
+        { period: "1970", Japan: 18.8, Germany: 13.4, Brazil: 35.2 },
+        { period: "1980", Japan: 13.6, Germany: 11.1, Brazil: 30.1 },
+        { period: "1990", Japan: 10, Germany: 11.3, Brazil: 23.8 },
+        { period: "2000", Japan: 9.4, Germany: 9.3, Brazil: 20.9 },
+        { period: "2010", Japan: 8.5, Germany: 8.3, Brazil: 15.3 },
+        { period: "2020", Japan: 6.8, Germany: 9.3, Brazil: 13.5 },
+      ],
+    },
   },
   {
     id: "t1-15",
@@ -135,6 +318,34 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The two pie charts below compare the sources of energy used in one country in 1990 and in 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
+    visualData: {
+      type: "pie",
+      title: "Sources of energy — 1990 vs 2020",
+      series: [
+        {
+          label: "1990",
+          data: [
+            { name: "Coal", value: 45 },
+            { name: "Natural gas", value: 22 },
+            { name: "Nuclear", value: 15 },
+            { name: "Hydro", value: 10 },
+            { name: "Wind & solar", value: 2 },
+            { name: "Other renewables", value: 6 },
+          ],
+        },
+        {
+          label: "2020",
+          data: [
+            { name: "Coal", value: 18 },
+            { name: "Natural gas", value: 32 },
+            { name: "Nuclear", value: 14 },
+            { name: "Hydro", value: 8 },
+            { name: "Wind & solar", value: 22 },
+            { name: "Other renewables", value: 6 },
+          ],
+        },
+      ],
+    },
   },
   {
     id: "t1-16",
@@ -142,13 +353,20 @@ export const writingPrompts: WritingPrompt[] = [
     prompt:
       "The bar chart below shows the percentage of adults in a European country who participated in various forms of physical exercise in 2000, 2010, and 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
     minWords: 150,
-  },
-  {
-    id: "t1-17",
-    task: 1,
-    prompt:
-      "The maps below show a university campus as it was in 1985 and as it is planned to look in 2030. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
-    minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "Adult participation in physical exercise (2000, 2010, 2020)",
+      yAxisLabel: "Adults participating (%)",
+      series: ["2000", "2010", "2020"],
+      data: [
+        { category: "Walking", "2000": 55, "2010": 62, "2020": 70 },
+        { category: "Running", "2000": 12, "2010": 20, "2020": 28 },
+        { category: "Cycling", "2000": 18, "2010": 22, "2020": 30 },
+        { category: "Swimming", "2000": 25, "2010": 22, "2020": 18 },
+        { category: "Gym / fitness", "2000": 15, "2010": 28, "2020": 38 },
+        { category: "Team sports", "2000": 22, "2010": 18, "2020": 14 },
+      ],
+    },
   },
   {
     id: "t2-1",

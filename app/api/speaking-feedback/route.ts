@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const stream = await getClient().chat.completions.create({
       model: getModel(),
-      max_tokens: 2048,
+      max_tokens: 3072,
       stream: true,
       response_format: { type: "json_object" },
       messages: [

@@ -81,9 +81,9 @@ export function ModeLanding() {
           <Sparkles className="w-3 h-3" />
           Speaking
         </div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
           Choose your{" "}
-          <span className="bg-gradient-to-r from-emerald-300 via-sky-300 to-violet-300 bg-clip-text text-transparent">
+          <span className="font-display italic text-[1.1em] bg-gradient-to-r from-emerald-300 via-sky-300 to-violet-300 bg-clip-text text-transparent">
             practice mode
           </span>
         </h1>

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WordCounter } from "@/components/WordCounter";
+import { Task1Chart } from "@/components/Task1Chart";
 import { BandScore, OverallBand } from "@/components/BandScore";
 import {
   StrengthsList,
@@ -73,6 +74,7 @@ export default function WritingPage() {
       prompt: currentPrompt.prompt,
       response: text,
       task: currentPrompt.task,
+      visualData: currentPrompt.visualData,
     });
   }, [submit, currentPrompt, text]);
 
@@ -102,8 +104,8 @@ export default function WritingPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
               Writing
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
-              <span className="bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
+              <span className="font-display italic text-[1.1em] bg-gradient-to-r from-violet-300 to-fuchsia-300 bg-clip-text text-transparent">
                 Writing
               </span>{" "}
               Practice
@@ -158,6 +160,12 @@ export default function WritingPage() {
               </p>
             </CardContent>
           </Card>
+
+          {currentPrompt.task === 1 && currentPrompt.visualData && (
+            <div className="mb-6">
+              <Task1Chart data={currentPrompt.visualData} />
+            </div>
+          )}
 
           {/* Writing Area */}
           <Card className="mb-6 bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
@@ -281,21 +289,39 @@ export default function WritingPage() {
                 <ImprovementsList items={result.improvements} />
               </div>
 
-              {/* Corrected Paragraph */}
-              {result.corrected_paragraph && (
+              {/* Band 7 Model Answer */}
+              {result.band7_model_answer && (
                 <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-base">
-                      Corrected Opening Paragraph
-                    </CardTitle>
-                    <CardDescription>
-                      Here&apos;s how your opening could be improved
-                    </CardDescription>
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/30 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                            Band 7
+                          </span>
+                          Complete Model Answer
+                        </CardTitle>
+                        <CardDescription className="mt-1">
+                          A full independent response written to score Band 7. Study the structure, vocabulary, and cohesive devices.
+                        </CardDescription>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          navigator.clipboard.writeText(
+                            result.band7_model_answer
+                          )
+                        }
+                        className="shrink-0 text-xs px-2.5 py-1 rounded-md bg-white/5 hover:bg-white/10 ring-1 ring-white/10 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        Copy
+                      </button>
+                    </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm leading-relaxed bg-emerald-500/10 p-4 rounded-xl ring-1 ring-emerald-400/20">
-                      {result.corrected_paragraph}
-                    </p>
+                    <div className="text-sm leading-relaxed bg-emerald-500/5 p-4 rounded-xl ring-1 ring-emerald-400/20 whitespace-pre-wrap">
+                      {result.band7_model_answer}
+                    </div>
                   </CardContent>
                 </Card>
               )}

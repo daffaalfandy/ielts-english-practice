@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef, useEffect } from "react";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,6 +22,7 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle,
+  Target,
 } from "lucide-react";
 
 export default function GrammarPage() {
@@ -58,15 +60,24 @@ export default function GrammarPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-sky-400" />
               Grammar
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
-              <span className="bg-gradient-to-r from-sky-300 to-indigo-300 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
+              <span className="font-display italic text-[1.1em] bg-gradient-to-r from-sky-300 to-indigo-300 bg-clip-text text-transparent">
                 Grammar
               </span>{" "}
               Checker
             </h1>
-            <p className="text-muted-foreground">
-              Paste any English text and get detailed grammar corrections.
-            </p>
+            <div className="flex items-start justify-between gap-3 flex-wrap">
+              <p className="text-muted-foreground">
+                Paste any English text and get detailed grammar corrections.
+              </p>
+              <Link
+                href="/grammar/drills"
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full bg-amber-500/10 ring-1 ring-amber-400/30 text-amber-300 hover:bg-amber-500/20 transition-colors"
+              >
+                <Target className="w-3 h-3" />
+                Drill my mistakes
+              </Link>
+            </div>
           </div>
 
           {/* Input */}

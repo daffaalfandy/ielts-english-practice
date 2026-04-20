@@ -19,7 +19,80 @@ import type {
   SpeakingPart3Feedback,
   SpeakingFullFeedback,
 } from "@/lib/storage";
-import { Target, Lightbulb } from "lucide-react";
+import { Target, Lightbulb, Copy } from "lucide-react";
+
+type AccentColor = "sky" | "violet" | "emerald" | "amber";
+
+const accentMap: Record<AccentColor, { bg: string; ring: string; text: string }> = {
+  sky: {
+    bg: "bg-sky-500/5",
+    ring: "ring-sky-400/20",
+    text: "text-sky-300",
+  },
+  violet: {
+    bg: "bg-violet-500/5",
+    ring: "ring-violet-400/20",
+    text: "text-violet-300",
+  },
+  emerald: {
+    bg: "bg-emerald-500/5",
+    ring: "ring-emerald-400/20",
+    text: "text-emerald-300",
+  },
+  amber: {
+    bg: "bg-amber-500/5",
+    ring: "ring-amber-400/20",
+    text: "text-amber-300",
+  },
+};
+
+function CopyButton({ text }: { text: string }) {
+  return (
+    <button
+      type="button"
+      onClick={() => navigator.clipboard.writeText(text)}
+      className="shrink-0 inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 ring-1 ring-white/10 text-muted-foreground hover:text-foreground transition-colors"
+    >
+      <Copy className="w-3 h-3" />
+      Copy
+    </button>
+  );
+}
+
+function ModelAnswerCard({
+  answer,
+  accent,
+  description,
+}: {
+  answer: string;
+  accent: AccentColor;
+  description: string;
+}) {
+  const c = accentMap[accent];
+  return (
+    <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <CardTitle className="text-base flex items-center gap-2">
+              <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/30 text-[10px] font-semibold uppercase tracking-wider ${accentMap.emerald.text}`}>
+                Band 7
+              </span>
+              Complete Model Answer
+            </CardTitle>
+            <CardDescription className="mt-1">{description}</CardDescription>
+          </div>
+          <CopyButton text={answer} />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className={`text-sm leading-relaxed ${c.bg} p-4 rounded-xl ring-1 ${c.ring} whitespace-pre-wrap`}>
+          {answer}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export function Part2FeedbackDisplay({ result }: { result: SpeakingFeedback }) {
   return (
@@ -45,17 +118,12 @@ export function Part2FeedbackDisplay({ result }: { result: SpeakingFeedback }) {
         </FeedbackCard>
       </div>
 
-      {result.model_answer_opening && (
-        <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base">Model Answer Opening</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm leading-relaxed bg-sky-500/10 p-4 rounded-xl ring-1 ring-sky-400/20 italic">
-              {result.model_answer_opening}
-            </p>
-          </CardContent>
-        </Card>
+      {result.band7_model_answer && (
+        <ModelAnswerCard
+          answer={result.band7_model_answer}
+          accent="sky"
+          description="A full ~2-minute monologue covering all bullet points. Study the structure, cohesion, and spoken register."
+        />
       )}
 
       {result.grammar_errors_found?.length > 0 && (
@@ -96,16 +164,44 @@ export function Part1FeedbackDisplay({
       {result.per_question?.length > 0 && (
         <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Per-question notes</CardTitle>
+            <CardTitle className="text-base">
+              Per-question feedback & Band 7 models
+            </CardTitle>
+            <CardDescription>
+              Compare your answer to the reference response for each question.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ol className="space-y-3 list-decimal list-inside text-sm">
+            <ol className="space-y-5 text-sm">
               {result.per_question.map((qc, i) => (
-                <li key={i}>
-                  <span className="text-foreground/90">{qc.question}</span>
-                  <p className="pl-5 mt-1 text-muted-foreground">
+                <li
+                  key={i}
+                  className="rounded-xl bg-white/5 ring-1 ring-white/10 p-4"
+                >
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className="shrink-0 text-xs font-mono tabular-nums text-sky-300 mt-0.5">
+                      Q{i + 1}
+                    </span>
+                    <p className="font-medium text-foreground/95">
+                      {qc.question}
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground text-xs mb-3">
                     {qc.brief_comment}
                   </p>
+                  {qc.band7_model_answer && (
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/30 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                          Band 7 model
+                        </span>
+                        <CopyButton text={qc.band7_model_answer} />
+                      </div>
+                      <p className="text-sm leading-relaxed bg-emerald-500/5 p-3 rounded-lg ring-1 ring-emerald-400/20 whitespace-pre-wrap">
+                        {qc.band7_model_answer}
+                      </p>
+                    </div>
+                  )}
                 </li>
               ))}
             </ol>
@@ -169,17 +265,44 @@ export function Part3FeedbackDisplay({
       {result.per_question?.length > 0 && (
         <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
           <CardHeader className="pb-3">
-            <CardTitle className="text-base">Idea development</CardTitle>
-            <CardDescription>How well each answer was extended</CardDescription>
+            <CardTitle className="text-base">
+              Idea development & Band 7 models
+            </CardTitle>
+            <CardDescription>
+              See how each answer could be extended with structured reasoning.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <ol className="space-y-3 list-decimal list-inside text-sm">
+            <ol className="space-y-5 text-sm">
               {result.per_question.map((qc, i) => (
-                <li key={i}>
-                  <span className="text-foreground/90">{qc.question}</span>
-                  <p className="pl-5 mt-1 text-muted-foreground">
+                <li
+                  key={i}
+                  className="rounded-xl bg-white/5 ring-1 ring-white/10 p-4"
+                >
+                  <div className="flex items-start gap-2 mb-2">
+                    <span className="shrink-0 text-xs font-mono tabular-nums text-violet-300 mt-0.5">
+                      Q{i + 1}
+                    </span>
+                    <p className="font-medium text-foreground/95">
+                      {qc.question}
+                    </p>
+                  </div>
+                  <p className="text-muted-foreground text-xs mb-3">
                     {qc.idea_development_comment}
                   </p>
+                  {qc.band7_model_answer && (
+                    <div className="relative">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 ring-1 ring-emerald-400/30 text-[10px] font-semibold uppercase tracking-wider text-emerald-300">
+                          Band 7 model
+                        </span>
+                        <CopyButton text={qc.band7_model_answer} />
+                      </div>
+                      <p className="text-sm leading-relaxed bg-violet-500/5 p-3 rounded-lg ring-1 ring-violet-400/20 whitespace-pre-wrap">
+                        {qc.band7_model_answer}
+                      </p>
+                    </div>
+                  )}
                 </li>
               ))}
             </ol>

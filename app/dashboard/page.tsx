@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Navbar } from "@/components/Navbar";
 import {
   Card,
@@ -10,6 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   getSessions,
   getWritingSessions,
@@ -18,6 +20,7 @@ import {
   getStreak,
   type PracticeSession,
 } from "@/lib/storage";
+import { aggregateErrors, type ErrorAggregation } from "@/lib/error-aggregation";
 import {
   LineChart,
   Line,
@@ -34,6 +37,8 @@ import {
   Flame,
   TrendingUp,
   Calendar,
+  Target,
+  ArrowRight,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -79,16 +84,11 @@ export default function DashboardPage() {
     band: s.feedback.overall_band,
   }));
 
-  // Common grammar error categories
-  const errorCategories: Record<string, number> = {};
-  grammarSessions.forEach((s) => {
-    s.feedback.errors.forEach((e) => {
-      errorCategories[e.category] = (errorCategories[e.category] || 0) + 1;
-    });
-  });
-  const topErrors = Object.entries(errorCategories)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 5);
+  // Cross-session grammar error aggregation (writing + speaking + grammar check)
+  const errorAgg: ErrorAggregation = aggregateErrors(sessions);
+  const topErrors: [string, number][] = errorAgg.byCategory
+    .slice(0, 5)
+    .map((c) => [c.category, c.count] as [string, number]);
 
   return (
     <>
@@ -100,9 +100,9 @@ export default function DashboardPage() {
               <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
               Dashboard
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2">
+            <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight mb-2">
               Your{" "}
-              <span className="bg-gradient-to-r from-orange-300 to-rose-300 bg-clip-text text-transparent">
+              <span className="font-display italic text-[1.1em] bg-gradient-to-r from-orange-300 to-rose-300 bg-clip-text text-transparent">
                 Progress
               </span>
             </h1>
@@ -243,18 +243,33 @@ export default function DashboardPage() {
             </Card>
           )}
 
-          {/* Grammar Error Patterns */}
+          {/* Grammar focus — cross-session aggregation with drill CTA */}
           {topErrors.length > 0 && (
-            <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
-              <CardHeader>
-                <CardTitle className="text-base">
-                  Most Common Grammar Errors
-                </CardTitle>
-                <CardDescription>
-                  Based on your grammar check history
-                </CardDescription>
+            <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
+              <div
+                className="absolute -top-20 -right-16 w-60 h-60 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 opacity-10 blur-3xl pointer-events-none"
+                aria-hidden
+              />
+              <CardHeader className="relative">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Target className="w-4 h-4 text-amber-400" />
+                      Grammar focus
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      Your top recurring mistakes across all writing, speaking, and grammar-check sessions.
+                    </CardDescription>
+                  </div>
+                  <Link href="/grammar/drills">
+                    <Button size="sm">
+                      Start drills
+                      <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                    </Button>
+                  </Link>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative">
                 <div className="space-y-3">
                   {topErrors.map(([category, count]) => (
                     <div
@@ -265,7 +280,7 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-2">
                         <div className="w-28 h-2 bg-white/5 ring-1 ring-white/5 rounded-full overflow-hidden">
                           <div
-                            className="h-full bg-gradient-to-r from-rose-400 to-orange-400 rounded-full"
+                            className="h-full bg-gradient-to-r from-amber-400 to-orange-400 rounded-full"
                             style={{
                               width: `${(count / topErrors[0][1]) * 100}%`,
                             }}

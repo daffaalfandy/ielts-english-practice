@@ -66,9 +66,9 @@ export default function HomePage() {
                 AI-powered IELTS preparation
               </span>
             </div>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-5 leading-[1.05]">
+            <h1 className="text-5xl sm:text-6xl font-semibold tracking-tight mb-5 leading-[1.02]">
               Master{" "}
-              <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-sky-400 bg-clip-text text-transparent">
+              <span className="font-display italic text-[1.08em] bg-gradient-to-r from-violet-300 via-fuchsia-300 to-sky-300 bg-clip-text text-transparent">
                 IELTS English
               </span>
               <br />

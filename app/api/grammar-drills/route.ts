@@ -1,29 +1,41 @@
 import { getClient, getModel } from "@/lib/anthropic";
-import { SPEAKING_PART3_FEEDBACK_PROMPT } from "@/lib/prompts";
+import { GRAMMAR_DRILLS_PROMPT } from "@/lib/prompts";
 import { NextRequest } from "next/server";
+
+interface DrillRequest {
+  focusCategories: string[];
+  count?: number;
+  recentExamples?: { error: string; correction: string }[];
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { theme, questions, answers, pairedCueCard } = (await req.json()) as {
-      theme: string;
-      questions: string[];
-      answers: string[];
-      pairedCueCard?: string;
-    };
+    const {
+      focusCategories,
+      count = 10,
+      recentExamples = [],
+    } = (await req.json()) as DrillRequest;
 
-    if (!questions?.length || !answers?.length) {
+    if (!focusCategories?.length) {
       return Response.json(
-        { error: "Missing required fields" },
+        { error: "focusCategories is required (non-empty)" },
         { status: 400 }
       );
     }
 
-    const qa = questions
-      .map((q, i) => `Q${i + 1}: ${q}\nA: ${answers[i] ?? "(no answer)"}`)
-      .join("\n\n");
-    const context = pairedCueCard
-      ? `The Part 3 discussion followed this Part 2 cue card: "${pairedCueCard}".\nTheme: ${theme}.\n\n`
-      : `Discussion theme: ${theme}.\n\n`;
+    const examplesBlock = recentExamples.length
+      ? `\n\nRecent mistakes the student has made (drills should address these patterns):\n${recentExamples
+          .slice(0, 8)
+          .map((e) => `- "${e.error}" → "${e.correction}"`)
+          .join("\n")}`
+      : "";
+
+    const userContent = `Generate ${count} grammar exercises for this student.
+
+Focus categories:
+${focusCategories.map((c) => `- ${c}`).join("\n")}${examplesBlock}
+
+Distribute the ${count} exercises roughly evenly across the focus categories.`;
 
     const stream = await getClient().chat.completions.create({
       model: getModel(),
@@ -31,11 +43,8 @@ export async function POST(req: NextRequest) {
       stream: true,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SPEAKING_PART3_FEEDBACK_PROMPT },
-        {
-          role: "user",
-          content: `${context}IELTS Part 3 questions and the candidate's transcribed answers:\n\n${qa}`,
-        },
+        { role: "system", content: GRAMMAR_DRILLS_PROMPT },
+        { role: "user", content: userContent },
       ],
     });
 
@@ -73,7 +82,7 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     const msg = error instanceof Error ? error.message : String(error);
-    console.error("[speaking-part3-feedback] Error:", msg);
+    console.error("[grammar-drills] Error:", msg);
     return Response.json(
       { error: `AI request failed: ${msg}` },
       { status: 500 }

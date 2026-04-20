@@ -112,11 +112,74 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
 
 ---
 
+## Prompt 3 — Task 1 writing prompts with chart data
+
+Target: additional `WritingPrompt` entries with `visualData`. Use this when
+you want to add more Task 1 items. Each prompt MUST be visually representable
+via bar/line/pie/table (no process diagrams or maps).
+
+````
+You are an IELTS content specialist. Generate N=6 new IELTS Academic Writing
+Task 1 prompts as a strict TypeScript array literal. Each entry must include
+a visualData block with realistic structured data.
+
+Requirements:
+- Each prompt's minWords is 150 and task is 1.
+- For each, pick ONE visual type from: "bar", "line", "pie", "table".
+- Avoid overlap with existing prompts (temperatures, international students,
+  renewable electricity, internet access, workforce, bottled water, tourists,
+  leisure spending, birth rates, exercise, energy sources).
+- Visual data must be realistic:
+    * Values produce visible trends or comparisons (not flat).
+    * Units are plausible (millions, percentages, TWh, USD, etc.).
+    * If "bar" or "line", series.length is 2–4.
+    * If "pie", 4–7 categories summing to ~100.
+    * If "table", 4–6 columns and 4–6 rows.
+- Match the writing prompt's wording to the visual (if prompt says
+  "bar chart", visualData.type must be "bar", etc.).
+- IDs continue from t1-18 upward.
+
+Output ONLY a TypeScript array literal matching this exact shape, nothing else:
+
+```ts
+[
+  {
+    id: "t1-18",
+    task: 1,
+    prompt: "The ... chart below shows ...",
+    minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "...",
+      yAxisLabel: "...",
+      series: ["A", "B"],
+      data: [
+        { category: "...", A: 10, B: 20 },
+        ...
+      ]
+    }
+  },
+  ...
+]
+```
+
+Permitted visualData shapes:
+
+- Bar: { type: "bar", title, yAxisLabel, xAxisLabel?, series: string[],
+        stacked?: boolean, data: { category, [series]: number }[] }
+- Line: { type: "line", title, yAxisLabel, xAxisLabel?, series: string[],
+         data: { period, [series]: number }[] }
+- Pie:  { type: "pie", title, data: { name, value: number }[] }
+- Table: { type: "table", title, columns: string[], rows: (string|number)[][] }
+````
+
+---
+
 ## Integration
 
-1. Run prompt 1 and/or 2 through your local LLM.
+1. Run prompt 1, 2, and/or 3 through your local LLM.
 2. Verify the output compiles (wrap in a scratch `.ts` file with the matching
    imports to type-check).
-3. Paste the array/object literal over the existing definition in
-   `lib/ielts-data.ts`.
+3. Paste the array/object literal into the existing definition in
+   `lib/ielts-data.ts` (append to the array for prompt 3).
 4. Run `npm run build` — zero TS errors means you're good.
