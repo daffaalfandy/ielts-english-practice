@@ -22,6 +22,8 @@ import type {
   TableVisualData,
   Task1VisualData,
 } from "@/lib/ielts-data";
+import { ProcessBlock } from "./task1/process-block";
+import { MapBlock } from "./task1/map-block";
 
 const palette = [
   "#a78bfa", // violet
@@ -324,5 +326,9 @@ export function Task1Chart({ data }: { data: Task1VisualData }) {
       return <PieChartBlock data={data} />;
     case "table":
       return <TableBlock data={data} />;
+    case "process":
+      return <ProcessBlock data={data} />;
+    case "map":
+      return <MapBlock data={data} />;
   }
 }

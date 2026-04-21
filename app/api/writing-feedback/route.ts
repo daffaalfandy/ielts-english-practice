@@ -1,5 +1,6 @@
 import { getClient, getModel } from "@/lib/anthropic";
 import { WRITING_FEEDBACK_PROMPT } from "@/lib/prompts";
+import { describeVisual } from "@/lib/visual-summary";
 import { NextRequest } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -13,9 +14,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const chartSection = visualData
-      ? `\n\nChart data (the candidate must describe this):\n\`\`\`json\n${JSON.stringify(visualData, null, 2)}\n\`\`\``
-      : "";
+    let chartSection = "";
+    if (visualData) {
+      const summary = describeVisual(visualData);
+      const jsonBlock = `\`\`\`json\n${JSON.stringify(visualData, null, 2)}\n\`\`\``;
+      chartSection = summary
+        ? `\n\nVisual (the candidate must describe this):\n${summary}\n\nStructured data for reference:\n${jsonBlock}`
+        : `\n\nChart data (the candidate must describe this):\n${jsonBlock}`;
+    }
 
     const userContent = `IELTS Writing Task ${task || 2} Prompt: "${prompt}"${chartSection}\n\nStudent's response:\n${response}`;
 

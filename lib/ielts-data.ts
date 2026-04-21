@@ -38,11 +38,80 @@ export interface TableVisualData {
   rows: Array<Array<string | number>>;
 }
 
+// ─── Process diagram ─────────────────────────────────────────────
+// Linear, ordered flow of stages. The array order IS the flow — no explicit
+// edges. Cyclical variant is a follow-up.
+
+export interface ProcessStep {
+  label: string;
+  description?: string;
+  /** Optional lucide-react icon name. Falls back to the step number. */
+  icon?: string;
+}
+
+export interface ProcessVisualData {
+  type: "process";
+  title: string;
+  layout?: "linear"; // "cyclical" reserved for a later iteration
+  steps: ProcessStep[]; // 2–8 steps
+}
+
+// ─── Map ─────────────────────────────────────────────────────────
+// Authored against a coarse cell grid. The renderer multiplies cells by a
+// base pixel size to produce SVG coordinates. One view = single map;
+// two views = before/after comparison.
+
+export type MapAreaFill = "park" | "water" | "parking" | "plaza";
+
+export type MapFeature =
+  | {
+      kind: "building";
+      id: string;
+      cells: { x: number; y: number; w: number; h: number };
+      label: string;
+    }
+  | {
+      kind: "road";
+      id: string;
+      /** Grid-coordinate waypoints. Rendered as a thick polyline. */
+      path: Array<[number, number]>;
+      label?: string;
+    }
+  | {
+      kind: "area";
+      id: string;
+      cells: { x: number; y: number; w: number; h: number };
+      label: string;
+      fill: MapAreaFill;
+    }
+  | {
+      kind: "marker";
+      id: string;
+      cell: { x: number; y: number };
+      label: string;
+      /** Optional lucide-react icon name. */
+      icon?: string;
+    };
+
+export interface MapView {
+  label: string;
+  features: MapFeature[];
+}
+
+export interface MapVisualData {
+  type: "map";
+  title: string;
+  grid: { cols: number; rows: number };
+  views: MapView[]; // 1 or 2 views
+}
+
 export type Task1VisualData =
   | BarVisualData
   | LineVisualData
   | PieVisualData
-  | TableVisualData;
+  | TableVisualData
+  | ProcessVisualData
+  | MapVisualData;
 
 export interface WritingPrompt {
   id: string;
@@ -365,6 +434,1008 @@ export const writingPrompts: WritingPrompt[] = [
         { category: "Swimming", "2000": 25, "2010": 22, "2020": 18 },
         { category: "Gym / fitness", "2000": 15, "2010": 28, "2020": 38 },
         { category: "Team sports", "2000": 22, "2010": 18, "2020": 14 },
+      ],
+    },
+  },
+  {
+    id: "t1-17",
+    task: 1,
+    prompt:
+      "The diagram below illustrates the stages involved in recycling aluminium drink cans. Summarise the information by selecting and reporting the main features.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "The aluminium-can recycling process",
+      layout: "linear",
+      steps: [
+        {
+          label: "Collection",
+          description:
+            "Used cans are collected from household recycling bins and public drop-off points.",
+          icon: "Trash2",
+        },
+        {
+          label: "Sorting",
+          description:
+            "Aluminium is separated from other metals using magnets and eddy-current systems.",
+          icon: "Filter",
+        },
+        {
+          label: "Shredding",
+          description: "Sorted cans are shredded into small uniform flakes.",
+          icon: "Scissors",
+        },
+        {
+          label: "Melting",
+          description:
+            "Flakes are melted in a furnace at around 750°C to form molten aluminium.",
+          icon: "Flame",
+        },
+        {
+          label: "Casting",
+          description:
+            "The molten metal is cast into large ingots ready for rolling.",
+          icon: "Package",
+        },
+        {
+          label: "Rolling",
+          description:
+            "Ingots are rolled into thin sheets from which new cans are manufactured.",
+          icon: "Layers",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-18",
+    task: 1,
+    prompt:
+      "The two maps below show the centre of the town of Greenfield in 2000 and in 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "map",
+      title: "Greenfield town centre — 2000 and 2020",
+      grid: { cols: 12, rows: 8 },
+      views: [
+        {
+          label: "2000",
+          features: [
+            {
+              kind: "road",
+              id: "high-street",
+              label: "High Street",
+              path: [
+                [0, 4],
+                [12, 4],
+              ],
+            },
+            {
+              kind: "road",
+              id: "mill-lane",
+              label: "Mill Lane",
+              path: [
+                [6, 0],
+                [6, 8],
+              ],
+            },
+            {
+              kind: "building",
+              id: "school",
+              label: "School",
+              cells: { x: 1, y: 1, w: 4, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "post-office",
+              label: "Post Office",
+              cells: { x: 7, y: 1, w: 2, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "park",
+              label: "Park",
+              fill: "park",
+              cells: { x: 1, y: 5, w: 4, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "carpark",
+              label: "Car Park",
+              fill: "parking",
+              cells: { x: 7, y: 5, w: 3, h: 2 },
+            },
+            {
+              kind: "marker",
+              id: "church",
+              label: "Church",
+              icon: "Church",
+              cell: { x: 10, y: 2 },
+            },
+          ],
+        },
+        {
+          label: "2020",
+          features: [
+            {
+              kind: "road",
+              id: "high-street",
+              label: "High Street (pedestrianised)",
+              path: [
+                [0, 4],
+                [12, 4],
+              ],
+            },
+            {
+              kind: "road",
+              id: "mill-lane",
+              label: "Mill Lane",
+              path: [
+                [6, 0],
+                [6, 8],
+              ],
+            },
+            {
+              kind: "building",
+              id: "apartments",
+              label: "Apartments",
+              cells: { x: 1, y: 1, w: 4, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "post-office",
+              label: "Post Office",
+              cells: { x: 7, y: 1, w: 2, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "park",
+              label: "Park (expanded)",
+              fill: "park",
+              cells: { x: 1, y: 5, w: 6, h: 3 },
+            },
+            {
+              kind: "building",
+              id: "supermarket",
+              label: "Supermarket",
+              cells: { x: 8, y: 5, w: 4, h: 3 },
+            },
+            {
+              kind: "marker",
+              id: "church",
+              label: "Church",
+              icon: "Church",
+              cell: { x: 10, y: 2 },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-19",
+    task: 1,
+    prompt:
+      "The diagram below illustrates the water cycle. Summarise the information by selecting and reporting the main features.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "The natural water cycle",
+      layout: "linear",
+      steps: [
+        {
+          label: "Evaporation",
+          description:
+            "Heat from the sun causes water in oceans, lakes and rivers to evaporate, turning into water vapour.",
+          icon: "Sun",
+        },
+        {
+          label: "Transpiration",
+          description:
+            "Plants release water vapour into the atmosphere through their leaves.",
+          icon: "Sprout",
+        },
+        {
+          label: "Condensation",
+          description:
+            "Water vapour rises, cools in the upper atmosphere and condenses into tiny droplets, forming clouds.",
+          icon: "Cloud",
+        },
+        {
+          label: "Precipitation",
+          description:
+            "Droplets combine and fall back to earth as rain, snow or hail.",
+          icon: "CloudRain",
+        },
+        {
+          label: "Runoff & Collection",
+          description:
+            "Water flows across land into rivers and lakes, or seeps underground, eventually returning to the oceans.",
+          icon: "Waves",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-20",
+    task: 1,
+    prompt:
+      "The diagram below shows the main stages in the production of concrete for use in the construction industry. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "How concrete is produced",
+      layout: "linear",
+      steps: [
+        {
+          label: "Raw Materials",
+          description:
+            "Limestone and clay are quarried as the primary raw inputs.",
+          icon: "Mountain",
+        },
+        {
+          label: "Crushing",
+          description:
+            "The raw materials are crushed into fine powder in a crusher.",
+          icon: "Hammer",
+        },
+        {
+          label: "Heating",
+          description:
+            "The powder is heated in a rotating kiln at around 1450°C to produce cement clinker.",
+          icon: "Flame",
+        },
+        {
+          label: "Grinding",
+          description:
+            "Cooled clinker is ground with gypsum to produce fine cement powder.",
+          icon: "Cog",
+        },
+        {
+          label: "Mixing",
+          description:
+            "Cement is combined with sand, gravel and water in a concrete mixer (typical ratio 1:2:4 plus water).",
+          icon: "Blend",
+        },
+        {
+          label: "Pouring",
+          description:
+            "The wet concrete is poured on site and left to cure into its final hardened form.",
+          icon: "Container",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-21",
+    task: 1,
+    prompt:
+      "The diagram below shows the stages involved in bringing coffee from the farm to the consumer's cup. Summarise the information by selecting and reporting the main features.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "From coffee bean to cup",
+      layout: "linear",
+      steps: [
+        {
+          label: "Harvesting",
+          description:
+            "Ripe red coffee cherries are picked by hand from coffee plants, typically once a year.",
+          icon: "Leaf",
+        },
+        {
+          label: "Processing",
+          description:
+            "Cherries are washed and the outer flesh is removed to reveal the green beans inside.",
+          icon: "Droplets",
+        },
+        {
+          label: "Drying",
+          description:
+            "Green beans are sun-dried on patios for up to two weeks until their moisture content falls below 12%.",
+          icon: "Sun",
+        },
+        {
+          label: "Roasting",
+          description:
+            "Dried beans are roasted at 200–220°C, which develops their colour, aroma and flavour.",
+          icon: "Flame",
+        },
+        {
+          label: "Grinding & Packaging",
+          description:
+            "Roasted beans are ground to the desired coarseness and vacuum-sealed for distribution.",
+          icon: "Package",
+        },
+        {
+          label: "Brewing",
+          description:
+            "Ground coffee is brewed with hot water by the consumer to produce the final drink.",
+          icon: "Coffee",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-22",
+    task: 1,
+    prompt:
+      "The diagram below explains how electricity is generated at a hydroelectric power station. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "How a hydroelectric power station generates electricity",
+      layout: "linear",
+      steps: [
+        {
+          label: "Reservoir",
+          description:
+            "A dam holds back a large body of water, storing potential energy at a high elevation.",
+          icon: "Waves",
+        },
+        {
+          label: "Intake",
+          description:
+            "Water is released through controlled intake gates into large pipes called penstocks.",
+          icon: "DoorOpen",
+        },
+        {
+          label: "Turbine",
+          description:
+            "The falling water gains kinetic energy and drives the blades of a turbine.",
+          icon: "Fan",
+        },
+        {
+          label: "Generator",
+          description:
+            "The rotating turbine spins a generator, converting mechanical energy into electrical energy.",
+          icon: "Zap",
+        },
+        {
+          label: "Transformer",
+          description:
+            "A transformer steps the voltage up to the level needed for long-distance transmission.",
+          icon: "Plug",
+        },
+        {
+          label: "Distribution",
+          description:
+            "Electricity is carried by high-voltage power lines to homes and businesses.",
+          icon: "Cable",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-23",
+    task: 1,
+    prompt:
+      "The diagram below illustrates the life cycle of a butterfly. Summarise the information by selecting and reporting the main features.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "The life cycle of a butterfly",
+      layout: "linear",
+      steps: [
+        {
+          label: "Egg",
+          description:
+            "A female butterfly lays small eggs on the underside of a leaf, typically in clusters.",
+          icon: "Circle",
+        },
+        {
+          label: "Caterpillar",
+          description:
+            "After about a week, a caterpillar (larva) hatches and begins to feed on the host plant.",
+          icon: "Bug",
+        },
+        {
+          label: "Chrysalis",
+          description:
+            "Once fully grown, the caterpillar attaches to a branch and forms a protective chrysalis (pupa).",
+          icon: "Shield",
+        },
+        {
+          label: "Transformation",
+          description:
+            "Inside the chrysalis, the larva undergoes metamorphosis over 10–14 days.",
+          icon: "Sparkles",
+        },
+        {
+          label: "Adult Butterfly",
+          description:
+            "A fully-formed adult emerges, expands its wings, and after a short drying period flies away to mate.",
+          icon: "Bird",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-24",
+    task: 1,
+    prompt:
+      "The two plans below show the layout of a public library before and after a recent refurbishment. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "map",
+      title: "Public library — before and after refurbishment",
+      grid: { cols: 12, rows: 8 },
+      views: [
+        {
+          label: "Before",
+          features: [
+            {
+              kind: "building",
+              id: "entrance",
+              label: "Entrance",
+              cells: { x: 5, y: 7, w: 2, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "reception",
+              label: "Reception",
+              cells: { x: 5, y: 5, w: 2, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "adult-books",
+              label: "Adult Books",
+              fill: "plaza",
+              cells: { x: 0, y: 1, w: 5, h: 4 },
+            },
+            {
+              kind: "area",
+              id: "childrens-books",
+              label: "Children's Books",
+              fill: "plaza",
+              cells: { x: 7, y: 1, w: 5, h: 4 },
+            },
+            {
+              kind: "area",
+              id: "reading-room",
+              label: "Reading Room",
+              fill: "parking",
+              cells: { x: 0, y: 5, w: 5, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "staff",
+              label: "Staff Office",
+              fill: "parking",
+              cells: { x: 7, y: 5, w: 5, h: 3 },
+            },
+          ],
+        },
+        {
+          label: "After",
+          features: [
+            {
+              kind: "building",
+              id: "entrance",
+              label: "Entrance",
+              cells: { x: 5, y: 7, w: 2, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "reception",
+              label: "Self-Service Kiosk",
+              cells: { x: 5, y: 5, w: 2, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "adult-books",
+              label: "Adult Books",
+              fill: "plaza",
+              cells: { x: 0, y: 1, w: 4, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "childrens-books",
+              label: "Children's Zone",
+              fill: "plaza",
+              cells: { x: 8, y: 1, w: 4, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "digital-hub",
+              label: "Digital Hub",
+              fill: "water",
+              cells: { x: 4, y: 1, w: 4, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "cafe",
+              label: "Café",
+              fill: "park",
+              cells: { x: 0, y: 5, w: 5, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "study-pods",
+              label: "Study Pods",
+              fill: "parking",
+              cells: { x: 7, y: 5, w: 5, h: 3 },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-25",
+    task: 1,
+    prompt:
+      "The maps below show the campus of Hillcrest University in 2005 and today. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "map",
+      title: "Hillcrest University campus — 2005 and today",
+      grid: { cols: 12, rows: 8 },
+      views: [
+        {
+          label: "2005",
+          features: [
+            {
+              kind: "road",
+              id: "main-road",
+              label: "Campus Road",
+              path: [
+                [0, 4],
+                [12, 4],
+              ],
+            },
+            {
+              kind: "building",
+              id: "main-hall",
+              label: "Main Hall",
+              cells: { x: 1, y: 1, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "library",
+              label: "Library",
+              cells: { x: 8, y: 1, w: 3, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "field",
+              label: "Sports Field",
+              fill: "park",
+              cells: { x: 1, y: 5, w: 5, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "carpark",
+              label: "Car Park",
+              fill: "parking",
+              cells: { x: 7, y: 5, w: 4, h: 3 },
+            },
+          ],
+        },
+        {
+          label: "Today",
+          features: [
+            {
+              kind: "road",
+              id: "main-road",
+              label: "Campus Road",
+              path: [
+                [0, 4],
+                [12, 4],
+              ],
+            },
+            {
+              kind: "building",
+              id: "main-hall",
+              label: "Main Hall",
+              cells: { x: 1, y: 1, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "library",
+              label: "Library (extended)",
+              cells: { x: 7, y: 1, w: 4, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "science-block",
+              label: "Science Block",
+              cells: { x: 5, y: 1, w: 2, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "dorms",
+              label: "Student Dorms",
+              cells: { x: 1, y: 5, w: 3, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "field",
+              label: "Sports Field",
+              fill: "park",
+              cells: { x: 4, y: 5, w: 3, h: 3 },
+            },
+            {
+              kind: "building",
+              id: "gym",
+              label: "Gym",
+              cells: { x: 7, y: 5, w: 2, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "carpark",
+              label: "Car Park",
+              fill: "parking",
+              cells: { x: 9, y: 5, w: 2, h: 3 },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-26",
+    task: 1,
+    prompt:
+      "The maps below show the coastal village of Dunby in 1980 and in 2020. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "map",
+      title: "Dunby village — 1980 and 2020",
+      grid: { cols: 12, rows: 8 },
+      views: [
+        {
+          label: "1980",
+          features: [
+            {
+              kind: "area",
+              id: "sea",
+              label: "Sea",
+              fill: "water",
+              cells: { x: 0, y: 0, w: 12, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "beach",
+              label: "Beach",
+              fill: "plaza",
+              cells: { x: 0, y: 2, w: 12, h: 1 },
+            },
+            {
+              kind: "road",
+              id: "coast-road",
+              label: "Coast Road",
+              path: [
+                [0, 4],
+                [12, 4],
+              ],
+            },
+            {
+              kind: "building",
+              id: "fishing-huts",
+              label: "Fishing Huts",
+              cells: { x: 1, y: 5, w: 3, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "pub",
+              label: "Village Pub",
+              cells: { x: 6, y: 5, w: 2, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "farmland",
+              label: "Farmland",
+              fill: "park",
+              cells: { x: 0, y: 6, w: 5, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "farmland-east",
+              label: "Farmland",
+              fill: "park",
+              cells: { x: 9, y: 5, w: 3, h: 3 },
+            },
+          ],
+        },
+        {
+          label: "2020",
+          features: [
+            {
+              kind: "area",
+              id: "sea",
+              label: "Sea",
+              fill: "water",
+              cells: { x: 0, y: 0, w: 12, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "beach",
+              label: "Beach",
+              fill: "plaza",
+              cells: { x: 0, y: 2, w: 12, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "marina",
+              label: "Marina",
+              cells: { x: 0, y: 3, w: 4, h: 1 },
+            },
+            {
+              kind: "road",
+              id: "coast-road",
+              label: "Coast Road",
+              path: [
+                [0, 4],
+                [12, 4],
+              ],
+            },
+            {
+              kind: "building",
+              id: "hotels",
+              label: "Hotel Complex",
+              cells: { x: 1, y: 5, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "pub",
+              label: "Restaurant",
+              cells: { x: 6, y: 5, w: 2, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "housing",
+              label: "Holiday Housing",
+              cells: { x: 0, y: 7, w: 5, h: 1 },
+            },
+            {
+              kind: "area",
+              id: "carpark",
+              label: "Car Park",
+              fill: "parking",
+              cells: { x: 9, y: 5, w: 3, h: 3 },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-27",
+    task: 1,
+    prompt:
+      "The plans below show an office layout before and after a recent redesign. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "map",
+      title: "Office floor — before and after redesign",
+      grid: { cols: 12, rows: 8 },
+      views: [
+        {
+          label: "Before",
+          features: [
+            {
+              kind: "building",
+              id: "reception",
+              label: "Reception",
+              cells: { x: 0, y: 0, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "office-1",
+              label: "Manager's Office",
+              cells: { x: 4, y: 0, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "office-2",
+              label: "Manager's Office",
+              cells: { x: 8, y: 0, w: 4, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "cubicles",
+              label: "Cubicles",
+              cells: { x: 0, y: 3, w: 12, h: 3 },
+            },
+            {
+              kind: "building",
+              id: "kitchen",
+              label: "Kitchen",
+              cells: { x: 0, y: 7, w: 3, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "meeting-room",
+              label: "Meeting Room",
+              cells: { x: 5, y: 7, w: 7, h: 1 },
+            },
+          ],
+        },
+        {
+          label: "After",
+          features: [
+            {
+              kind: "building",
+              id: "reception",
+              label: "Reception",
+              cells: { x: 0, y: 0, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "phone-booths",
+              label: "Phone Booths",
+              cells: { x: 4, y: 0, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "meeting-rooms",
+              label: "Meeting Rooms",
+              cells: { x: 8, y: 0, w: 4, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "open-desks",
+              label: "Open-Plan Desks",
+              cells: { x: 0, y: 3, w: 8, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "breakout",
+              label: "Breakout Lounge",
+              fill: "park",
+              cells: { x: 8, y: 3, w: 4, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "kitchen",
+              label: "Kitchen & Café",
+              fill: "plaza",
+              cells: { x: 0, y: 7, w: 5, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "quiet-room",
+              label: "Quiet Room",
+              cells: { x: 6, y: 7, w: 2, h: 1 },
+            },
+            {
+              kind: "building",
+              id: "collab-zone",
+              label: "Collaboration Zone",
+              cells: { x: 9, y: 7, w: 3, h: 1 },
+            },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-28",
+    task: 1,
+    prompt:
+      "The maps below show a city park as it is today and as it will appear after a proposed redevelopment. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "map",
+      title: "Riverside City Park — current and proposed layout",
+      grid: { cols: 12, rows: 8 },
+      views: [
+        {
+          label: "Current",
+          features: [
+            {
+              kind: "area",
+              id: "river",
+              label: "River",
+              fill: "water",
+              cells: { x: 0, y: 0, w: 12, h: 1 },
+            },
+            {
+              kind: "area",
+              id: "lawn",
+              label: "Open Lawn",
+              fill: "park",
+              cells: { x: 0, y: 2, w: 8, h: 5 },
+            },
+            {
+              kind: "road",
+              id: "path",
+              label: "Footpath",
+              path: [
+                [0, 5],
+                [12, 5],
+              ],
+            },
+            {
+              kind: "building",
+              id: "kiosk",
+              label: "Kiosk",
+              cells: { x: 9, y: 2, w: 2, h: 1 },
+            },
+            {
+              kind: "area",
+              id: "carpark",
+              label: "Car Park",
+              fill: "parking",
+              cells: { x: 8, y: 6, w: 4, h: 2 },
+            },
+            {
+              kind: "marker",
+              id: "fountain",
+              label: "Fountain",
+              icon: "Droplets",
+              cell: { x: 4, y: 4 },
+            },
+          ],
+        },
+        {
+          label: "Proposed",
+          features: [
+            {
+              kind: "area",
+              id: "river",
+              label: "River",
+              fill: "water",
+              cells: { x: 0, y: 0, w: 12, h: 1 },
+            },
+            {
+              kind: "area",
+              id: "lawn",
+              label: "Open Lawn",
+              fill: "park",
+              cells: { x: 0, y: 2, w: 5, h: 3 },
+            },
+            {
+              kind: "area",
+              id: "playground",
+              label: "Playground",
+              fill: "plaza",
+              cells: { x: 5, y: 2, w: 3, h: 3 },
+            },
+            {
+              kind: "building",
+              id: "cafe",
+              label: "Café",
+              cells: { x: 9, y: 2, w: 3, h: 2 },
+            },
+            {
+              kind: "road",
+              id: "path",
+              label: "Footpath",
+              path: [
+                [0, 5],
+                [12, 5],
+              ],
+            },
+            {
+              kind: "area",
+              id: "garden",
+              label: "Community Garden",
+              fill: "park",
+              cells: { x: 0, y: 6, w: 5, h: 2 },
+            },
+            {
+              kind: "area",
+              id: "amphitheatre",
+              label: "Amphitheatre",
+              fill: "plaza",
+              cells: { x: 5, y: 6, w: 3, h: 2 },
+            },
+            {
+              kind: "building",
+              id: "bike-hub",
+              label: "Bike Hub",
+              cells: { x: 8, y: 6, w: 4, h: 2 },
+            },
+            {
+              kind: "marker",
+              id: "fountain",
+              label: "Fountain",
+              icon: "Droplets",
+              cell: { x: 2, y: 4 },
+            },
+          ],
+        },
       ],
     },
   },
