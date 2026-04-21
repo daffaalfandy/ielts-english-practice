@@ -75,14 +75,31 @@ export default function DashboardPage() {
   const grammarSessions = getGrammarSessions();
   const streak = getStreak();
 
-  // Chart data: writing band scores over time
-  const chartData = writingSessions.map((s) => ({
-    date: new Date(s.timestamp).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    }),
-    band: s.feedback.overall_band,
-  }));
+  // Chart data: writing band scores over time.
+  // Group by calendar day and average, so each x-tick is a unique date —
+  // recharts' categorical axis snaps hover to the first occurrence when
+  // multiple points share the same label, which misaligns the tooltip.
+  const dayBuckets = new Map<string, { sum: number; count: number; ts: number }>();
+  for (const s of writingSessions) {
+    const d = new Date(s.timestamp);
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const bucket = dayBuckets.get(key);
+    if (bucket) {
+      bucket.sum += s.feedback.overall_band;
+      bucket.count += 1;
+    } else {
+      dayBuckets.set(key, { sum: s.feedback.overall_band, count: 1, ts: d.getTime() });
+    }
+  }
+  const chartData = Array.from(dayBuckets.values())
+    .sort((a, b) => a.ts - b.ts)
+    .map(({ sum, count, ts }) => ({
+      date: new Date(ts).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      band: Number((sum / count).toFixed(2)),
+    }));
 
   // Cross-session grammar error aggregation (writing + speaking + grammar check)
   const errorAgg: ErrorAggregation = aggregateErrors(sessions);
