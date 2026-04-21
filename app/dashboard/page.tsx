@@ -214,6 +214,13 @@ export default function DashboardPage() {
                           color: "#fff",
                           fontSize: "12px",
                         }}
+                        labelStyle={{ color: "rgba(255,255,255,0.7)", marginBottom: 4 }}
+                        itemStyle={{ color: "#fff" }}
+                        cursor={{ stroke: "rgba(255,255,255,0.15)", strokeWidth: 1 }}
+                        formatter={(value) => [
+                          typeof value === "number" ? value.toFixed(1) : value,
+                          "Band",
+                        ]}
                       />
                       <Line
                         type="monotone"

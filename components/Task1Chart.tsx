@@ -41,6 +41,15 @@ const tooltipStyle: React.CSSProperties = {
   fontSize: "12px",
 };
 
+const tooltipLabelStyle: React.CSSProperties = {
+  color: "rgba(255,255,255,0.7)",
+  marginBottom: 4,
+};
+
+const tooltipItemStyle: React.CSSProperties = {
+  color: "#fff",
+};
+
 const axisStyle = {
   fontSize: 11,
   stroke: "rgba(255,255,255,0.55)",
@@ -99,7 +108,12 @@ function BarChartBlock({ data }: { data: BarVisualData }) {
               fontSize={axisStyle.fontSize}
               stroke={axisStyle.stroke}
             />
-            <Tooltip contentStyle={tooltipStyle} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              labelStyle={tooltipLabelStyle}
+              itemStyle={tooltipItemStyle}
+              cursor={{ fill: "rgba(255,255,255,0.04)" }}
+            />
             <Legend
               iconType="circle"
               wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
@@ -146,7 +160,12 @@ function LineChartBlock({ data }: { data: LineVisualData }) {
               stroke={axisStyle.stroke}
             />
             <YAxis fontSize={axisStyle.fontSize} stroke={axisStyle.stroke} />
-            <Tooltip contentStyle={tooltipStyle} />
+            <Tooltip
+              contentStyle={tooltipStyle}
+              labelStyle={tooltipLabelStyle}
+              itemStyle={tooltipItemStyle}
+              cursor={{ stroke: "rgba(255,255,255,0.15)", strokeWidth: 1 }}
+            />
             <Legend
               iconType="circle"
               wrapperStyle={{ fontSize: 11, paddingTop: 8 }}
@@ -225,7 +244,11 @@ function PieChartBlock({ data }: { data: PieVisualData }) {
                       />
                     ))}
                   </Pie>
-                  <Tooltip contentStyle={tooltipStyle} />
+                  <Tooltip
+                    contentStyle={tooltipStyle}
+                    labelStyle={tooltipLabelStyle}
+                    itemStyle={tooltipItemStyle}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
