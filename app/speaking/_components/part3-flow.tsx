@@ -21,6 +21,7 @@ import { useStream } from "@/lib/use-stream";
 import { saveSession, type SpeakingPart3Feedback } from "@/lib/storage";
 import { Loader2, RefreshCw } from "lucide-react";
 import { QuestionFlow, type QuestionFlowSection } from "./question-flow";
+import { SPEAKING_PART3_PER_QUESTION_SECONDS } from "@/lib/timing";
 import { Part3FeedbackDisplay } from "./feedback-display";
 
 interface Part3FlowProps {
@@ -192,7 +193,7 @@ export function Part3Flow({
         </Card>
         <QuestionFlow
           sections={sections}
-          softTimerSeconds={90}
+          softTimerSeconds={SPEAKING_PART3_PER_QUESTION_SECONDS}
           accentGradient="from-violet-400 to-fuchsia-500"
           onComplete={handleComplete}
           disabled={isLoading}

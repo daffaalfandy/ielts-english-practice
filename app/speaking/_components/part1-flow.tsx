@@ -17,6 +17,7 @@ import { saveSession, type SpeakingPart1Feedback } from "@/lib/storage";
 import { Loader2, RefreshCw } from "lucide-react";
 import { QuestionFlow, type QuestionFlowSection } from "./question-flow";
 import { Part1FeedbackDisplay } from "./feedback-display";
+import { SPEAKING_PART1_PER_QUESTION_SECONDS } from "@/lib/timing";
 
 interface Part1FlowProps {
   onComplete?: (payload: {
@@ -136,7 +137,7 @@ export function Part1Flow({ onComplete }: Part1FlowProps = {}) {
         </Card>
         <QuestionFlow
           sections={sections}
-          softTimerSeconds={60}
+          softTimerSeconds={SPEAKING_PART1_PER_QUESTION_SECONDS}
           accentGradient="from-sky-400 to-indigo-500"
           onComplete={handleComplete}
           disabled={isLoading}

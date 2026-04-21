@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCountdown } from "@/lib/use-countdown";
 
 interface TimerProps {
-  duration: number; // in seconds
+  duration: number; // seconds
   onComplete: () => void;
   isRunning: boolean;
   label: string;
@@ -17,36 +17,14 @@ export function Timer({
   label,
   color,
 }: TimerProps) {
-  const [timeLeft, setTimeLeft] = useState(duration);
+  const { remaining } = useCountdown(duration, {
+    isRunning,
+    onExpire: onComplete,
+  });
 
-  useEffect(() => {
-    setTimeLeft(duration);
-  }, [duration]);
-
-  const handleComplete = useCallback(() => {
-    onComplete();
-  }, [onComplete]);
-
-  useEffect(() => {
-    if (!isRunning) return;
-
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          handleComplete();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isRunning, handleComplete]);
-
-  const progress = timeLeft / duration;
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
+  const progress = duration > 0 ? remaining / duration : 0;
+  const minutes = Math.floor(remaining / 60);
+  const seconds = remaining % 60;
 
   const radius = 72;
   const circumference = 2 * Math.PI * radius;
@@ -115,7 +93,11 @@ export function Timer({
             className="transition-all duration-1000 ease-linear"
           />
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <div
+          role="timer"
+          aria-label={label}
+          className="absolute inset-0 flex flex-col items-center justify-center"
+        >
           <span className={`text-4xl font-bold tabular-nums ${dynamic.text}`}>
             {minutes}:{seconds.toString().padStart(2, "0")}
           </span>

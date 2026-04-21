@@ -13,7 +13,11 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { WordCounter } from "@/components/WordCounter";
+import { CountdownBadge } from "@/components/CountdownBadge";
+import { TimeUpWarning } from "@/components/TimeUpWarning";
 import { Task1Chart } from "@/components/Task1Chart";
+import { useCountdown } from "@/lib/use-countdown";
+import { WRITING_TASK_SECONDS } from "@/lib/timing";
 import { BandScore, OverallBand } from "@/components/BandScore";
 import {
   StrengthsList,
@@ -40,21 +44,42 @@ export default function WritingPage() {
     }
   }, [mounted]);
   const [text, setText] = useState("");
+  const [warningOpen, setWarningOpen] = useState(false);
   const { isLoading, error, rawText, result, submit, reset } =
     useStream<WritingFeedback>();
   const savedRef = useRef(false);
+
+  // Explicit session state machine. The timer only ticks in "writing".
+  //   writing    — user is composing (timer running)
+  //   submitting — waiting for AI feedback (timer paused)
+  //   reviewing  — feedback displayed (timer stopped)
+  const sessionPhase: "writing" | "submitting" | "reviewing" = result
+    ? "reviewing"
+    : isLoading
+      ? "submitting"
+      : "writing";
+
+  const durationSeconds = WRITING_TASK_SECONDS[currentPrompt.task];
+  const { remaining, restart: restartCountdown } = useCountdown(
+    durationSeconds,
+    {
+      isRunning: sessionPhase === "writing",
+      onExpire: () => setWarningOpen(true),
+    }
+  );
 
   const switchTask = useCallback(
     (task: 1 | 2) => {
       setSelectedTask(task);
       const filtered = writingPrompts.filter((p) => p.task === task);
-      setCurrentPrompt(
-        filtered[Math.floor(Math.random() * filtered.length)]
-      );
+      const nextPrompt = filtered[Math.floor(Math.random() * filtered.length)];
+      setCurrentPrompt(nextPrompt);
       setText("");
       reset();
+      setWarningOpen(false);
+      restartCountdown(WRITING_TASK_SECONDS[task]);
     },
-    [reset]
+    [reset, restartCountdown]
   );
 
   const newPrompt = useCallback(() => {
@@ -66,7 +91,9 @@ export default function WritingPage() {
     setCurrentPrompt(next);
     setText("");
     reset();
-  }, [selectedTask, reset]);
+    setWarningOpen(false);
+    restartCountdown(WRITING_TASK_SECONDS[next.task]);
+  }, [selectedTask, reset, restartCountdown]);
 
   const handleSubmit = useCallback(async () => {
     savedRef.current = false;
@@ -136,22 +163,40 @@ export default function WritingPage() {
           {/* Prompt Card */}
           <Card className="mb-6 bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
             <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2">
                   <CardTitle className="text-base">Writing Prompt</CardTitle>
                   <Badge variant="secondary">
                     Task {currentPrompt.task}
                   </Badge>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={newPrompt}
-                  disabled={isLoading}
-                >
-                  <RefreshCw className="w-4 h-4 mr-1" />
-                  New Prompt
-                </Button>
+                <div className="flex items-center gap-2">
+                  <CountdownBadge
+                    remainingSeconds={remaining}
+                    label={`Task ${currentPrompt.task}`}
+                    warnAtSeconds={Math.max(60, Math.round(durationSeconds * 0.1))}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const hasWork = text.trim().split(/\s+/).length > 20;
+                      if (
+                        hasWork &&
+                        !window.confirm(
+                          "Discard your current response and load a new prompt?"
+                        )
+                      ) {
+                        return;
+                      }
+                      newPrompt();
+                    }}
+                    disabled={isLoading}
+                  >
+                    <RefreshCw className="w-4 h-4 mr-1" />
+                    New Prompt
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -160,6 +205,14 @@ export default function WritingPage() {
               </p>
             </CardContent>
           </Card>
+
+          {/* Soft "time's up" warning — the user can dismiss it and keep writing. */}
+          <TimeUpWarning
+            open={warningOpen && sessionPhase === "writing"}
+            onDismiss={() => setWarningOpen(false)}
+            title={`Time's up for Task ${currentPrompt.task}`}
+            message={`You've reached the official ${currentPrompt.task === 1 ? "20-minute" : "40-minute"} limit. In the real exam you'd stop here — you can keep writing and submit for feedback.`}
+          />
 
           {currentPrompt.task === 1 && currentPrompt.visualData && (
             <div className="mb-6">

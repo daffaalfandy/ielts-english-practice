@@ -11,6 +11,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSpeechRecognition } from "@/lib/use-speech-recognition";
+import { useCountdown } from "@/lib/use-countdown";
+import { TimeUpWarning } from "@/components/TimeUpWarning";
+import { CountdownBadge } from "@/components/CountdownBadge";
 import {
   Mic,
   MicOff,
@@ -36,6 +39,11 @@ interface QuestionFlowProps {
   onComplete: (answers: string[]) => void;
   /** Optional disabled state (e.g., while orchestrator is submitting). */
   disabled?: boolean;
+  /**
+   * Fires once per question when its soft timer hits zero. Parent can use
+   * this to surface a warning banner / play an audio cue.
+   */
+  onQuestionTimeUp?: (questionIndex: number) => void;
 }
 
 interface FlatEntry {
@@ -50,6 +58,7 @@ export function QuestionFlow({
   accentGradient,
   onComplete,
   disabled,
+  onQuestionTimeUp,
 }: QuestionFlowProps) {
   const flat: FlatEntry[] = useMemo(() => {
     const out: FlatEntry[] = [];
@@ -71,13 +80,39 @@ export function QuestionFlow({
     new Array(total).fill("")
   );
   const [editingDraft, setEditingDraft] = useState("");
-  const [timeLeft, setTimeLeft] = useState(softTimerSeconds);
   const [isFinished, setIsFinished] = useState(false);
   const completedRef = useRef(false);
   const onCompleteRef = useRef(onComplete);
   useEffect(() => {
     onCompleteRef.current = onComplete;
   }, [onComplete]);
+
+  const onQuestionTimeUpRef = useRef(onQuestionTimeUp);
+  useEffect(() => {
+    onQuestionTimeUpRef.current = onQuestionTimeUp;
+  }, [onQuestionTimeUp]);
+
+  const [timeUpBannerOpen, setTimeUpBannerOpen] = useState(false);
+
+  const handleQuestionExpire = useCallback(() => {
+    setTimeUpBannerOpen(true);
+    onQuestionTimeUpRef.current?.(index);
+  }, [index]);
+
+  const { remaining: timeLeft, restart: restartTimer } = useCountdown(
+    softTimerSeconds,
+    {
+      isRunning: !disabled && !isFinished,
+      onExpire: handleQuestionExpire,
+    }
+  );
+
+  // Reset timer + dismiss prior warning when the user advances.
+  useEffect(() => {
+    restartTimer(softTimerSeconds);
+    setTimeUpBannerOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   const {
     isSupported,
@@ -101,20 +136,6 @@ export function QuestionFlow({
     return () => resetSpeech();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSupported]);
-
-  // Reset the soft timer when the question changes
-  useEffect(() => {
-    setTimeLeft(softTimerSeconds);
-  }, [index, softTimerSeconds]);
-
-  // Soft countdown (does not auto-advance)
-  useEffect(() => {
-    if (disabled) return;
-    const iv = setInterval(() => {
-      setTimeLeft((t) => (t <= 0 ? 0 : t - 1));
-    }, 1000);
-    return () => clearInterval(iv);
-  }, [disabled]);
 
   // Mirror the live mic transcript into the draft unless the user is editing
   useEffect(() => {
@@ -159,14 +180,19 @@ export function QuestionFlow({
   }, [isListening, startListening, stopListening]);
 
   const currentEntry = flat[index];
-  const mm = Math.floor(Math.max(timeLeft, 0) / 60);
-  const ss = Math.max(timeLeft, 0) % 60;
   const progressPct = ((index + 1) / total) * 100;
 
   if (!currentEntry) return null;
 
   return (
     <div className="space-y-5">
+      <TimeUpWarning
+        open={timeUpBannerOpen}
+        onDismiss={() => setTimeUpBannerOpen(false)}
+        title="Time's up for this question"
+        message="In the real IELTS exam, the examiner would move on. Wrap up your answer and press Next to continue."
+      />
+
       {/* Progress + unsupported-browser notice */}
       {!isSupported && (
         <Card className="bg-amber-500/5 backdrop-blur-xl ring-1 ring-amber-400/30">
@@ -216,9 +242,10 @@ export function QuestionFlow({
               )}
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-muted-foreground font-mono tabular-nums">
-                {mm}:{ss.toString().padStart(2, "0")}
-              </span>
+              <CountdownBadge
+                remainingSeconds={timeLeft}
+                warnAtSeconds={Math.min(15, Math.ceil(softTimerSeconds / 4))}
+              />
               {isSupported && isListening && (
                 <Badge
                   variant="outline"

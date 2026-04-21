@@ -22,6 +22,10 @@ import {
 } from "@/lib/ielts-data";
 import { saveSession, type SpeakingFeedback } from "@/lib/storage";
 import {
+  SPEAKING_PART2_PREP_SECONDS,
+  SPEAKING_PART2_SPEAKING_SECONDS,
+} from "@/lib/timing";
+import {
   RefreshCw,
   Loader2,
   MessageSquare,
@@ -257,7 +261,7 @@ export function Part2Flow({
         <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
           <CardContent className="py-10 flex flex-col items-center">
             <Timer
-              duration={60}
+              duration={SPEAKING_PART2_PREP_SECONDS}
               isRunning={true}
               onComplete={startSpeaking}
               label="Preparation Time"
@@ -281,7 +285,7 @@ export function Part2Flow({
         <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
           <CardContent className="py-10 flex flex-col items-center gap-4">
             <Timer
-              duration={120}
+              duration={SPEAKING_PART2_SPEAKING_SECONDS}
               isRunning={true}
               onComplete={submitFeedback}
               label="Speaking Time"
