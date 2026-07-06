@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
 
     const stream = await getClient().chat.completions.create({
       model: getModel(),
+      temperature: 0.2,
       max_tokens: 3072,
       stream: true,
       response_format: { type: "json_object" },

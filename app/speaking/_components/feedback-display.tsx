@@ -12,6 +12,7 @@ import {
   FeedbackCard,
   GrammarErrorsList,
   UsefulPhrases,
+  Band7TipsCard,
 } from "@/components/FeedbackCard";
 import type {
   SpeakingFeedback,
@@ -59,6 +60,16 @@ function CopyButton({ text }: { text: string }) {
   );
 }
 
+function PronunciationCaveat() {
+  return (
+    <p className="mt-3 text-xs text-muted-foreground italic text-center max-w-md">
+      Estimated from your transcript. Pronunciation (25% of the real Speaking
+      score) cannot be assessed here, so this band reflects the other three
+      criteria only.
+    </p>
+  );
+}
+
 function ModelAnswerCard({
   answer,
   accent,
@@ -100,6 +111,7 @@ export function Part2FeedbackDisplay({ result }: { result: SpeakingFeedback }) {
       <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
         <CardContent className="py-8 flex flex-col items-center">
           <OverallBand score={result.estimated_band} />
+          <PronunciationCaveat />
         </CardContent>
       </Card>
 
@@ -117,6 +129,22 @@ export function Part2FeedbackDisplay({ result }: { result: SpeakingFeedback }) {
           <p className="text-sm">{result.coherence_comment}</p>
         </FeedbackCard>
       </div>
+
+      {result.band7_tips && (
+        <Band7TipsCard
+          tips={[
+            {
+              label: "Fluency & Coherence",
+              tip: result.band7_tips.fluency_coherence,
+            },
+            {
+              label: "Lexical Resource",
+              tip: result.band7_tips.lexical_resource,
+            },
+            { label: "Grammar", tip: result.band7_tips.grammar },
+          ]}
+        />
+      )}
 
       {result.band7_model_answer && (
         <ModelAnswerCard
@@ -146,6 +174,7 @@ export function Part1FeedbackDisplay({
       <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
         <CardContent className="py-8 flex flex-col items-center">
           <OverallBand score={result.estimated_band} />
+          <PronunciationCaveat />
         </CardContent>
       </Card>
 
@@ -189,6 +218,14 @@ export function Part1FeedbackDisplay({
                   <p className="text-muted-foreground text-xs mb-3">
                     {qc.brief_comment}
                   </p>
+                  {qc.band7_tip && (
+                    <p className="text-xs mb-3 flex items-start gap-1.5">
+                      <span className="shrink-0 font-semibold uppercase tracking-wider text-emerald-300 text-[10px] mt-0.5">
+                        Tip
+                      </span>
+                      <span className="text-foreground/80">{qc.band7_tip}</span>
+                    </p>
+                  )}
                   {qc.band7_model_answer && (
                     <div className="relative">
                       <div className="flex items-center justify-between mb-1.5">
@@ -241,6 +278,7 @@ export function Part3FeedbackDisplay({
       <Card className="bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
         <CardContent className="py-8 flex flex-col items-center">
           <OverallBand score={result.estimated_band} />
+          <PronunciationCaveat />
         </CardContent>
       </Card>
 
@@ -290,6 +328,14 @@ export function Part3FeedbackDisplay({
                   <p className="text-muted-foreground text-xs mb-3">
                     {qc.idea_development_comment}
                   </p>
+                  {qc.band7_tip && (
+                    <p className="text-xs mb-3 flex items-start gap-1.5">
+                      <span className="shrink-0 font-semibold uppercase tracking-wider text-emerald-300 text-[10px] mt-0.5">
+                        Tip
+                      </span>
+                      <span className="text-foreground/80">{qc.band7_tip}</span>
+                    </p>
+                  )}
                   {qc.band7_model_answer && (
                     <div className="relative">
                       <div className="flex items-center justify-between mb-1.5">
@@ -413,6 +459,22 @@ export function FullTestFeedbackDisplay({
           </ul>
         </FeedbackCard>
       </div>
+
+      {result.band7_tips && (
+        <Band7TipsCard
+          tips={[
+            {
+              label: "Fluency & Coherence",
+              tip: result.band7_tips.fluency_coherence,
+            },
+            {
+              label: "Lexical Resource",
+              tip: result.band7_tips.lexical_resource,
+            },
+            { label: "Grammar", tip: result.band7_tips.grammar },
+          ]}
+        />
+      )}
 
       <Card className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 backdrop-blur-xl ring-1 ring-amber-400/30">
         <CardHeader className="pb-2">

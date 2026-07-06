@@ -23,6 +23,7 @@ import {
   StrengthsList,
   ImprovementsList,
   VocabSuggestions,
+  Band7TipsCard,
 } from "@/components/FeedbackCard";
 import { useStream } from "@/lib/use-stream";
 import { writingPrompts, type WritingPrompt } from "@/lib/ielts-data";
@@ -341,6 +342,27 @@ export default function WritingPage() {
                 <StrengthsList items={result.strengths} />
                 <ImprovementsList items={result.improvements} />
               </div>
+
+              {/* Per-criterion Band 7 tips */}
+              {result.band7_tips && (
+                <Band7TipsCard
+                  tips={[
+                    {
+                      label: "Task Achievement",
+                      tip: result.band7_tips.task_achievement,
+                    },
+                    {
+                      label: "Coherence & Cohesion",
+                      tip: result.band7_tips.coherence_cohesion,
+                    },
+                    {
+                      label: "Lexical Resource",
+                      tip: result.band7_tips.lexical_resource,
+                    },
+                    { label: "Grammar", tip: result.band7_tips.grammar },
+                  ]}
+                />
+              )}
 
               {/* Band 7 Model Answer */}
               {result.band7_model_answer && (

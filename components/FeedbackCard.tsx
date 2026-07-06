@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, AlertCircle, Lightbulb, BookOpen } from "lucide-react";
+import { CheckCircle, AlertCircle, Lightbulb, BookOpen, Target } from "lucide-react";
 
 interface FeedbackCardProps {
   title: string;
@@ -130,6 +130,33 @@ export function GrammarErrorsList({
           >
             <p className="text-rose-300/90 line-through">{item.error}</p>
             <p className="text-emerald-300">{item.correction}</p>
+          </div>
+        ))}
+      </div>
+    </FeedbackCard>
+  );
+}
+
+export function Band7TipsCard({
+  tips,
+}: {
+  tips: { label: string; tip: string }[];
+}) {
+  return (
+    <FeedbackCard
+      title="How to reach Band 7"
+      icon={<Target className="w-4.5 h-4.5 text-emerald-400" />}
+    >
+      <div className="space-y-3">
+        {tips.map((t, i) => (
+          <div
+            key={i}
+            className="text-sm rounded-xl bg-emerald-500/5 ring-1 ring-emerald-400/20 p-3"
+          >
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-300 mb-1">
+              {t.label}
+            </p>
+            <p className="text-foreground/90 leading-relaxed">{t.tip}</p>
           </div>
         ))}
       </div>

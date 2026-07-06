@@ -51,6 +51,7 @@ ${part3QA}`;
 
     const stream = await getClient().chat.completions.create({
       model: getModel(),
+      temperature: 0.2,
       max_tokens: 4096,
       stream: true,
       response_format: { type: "json_object" },

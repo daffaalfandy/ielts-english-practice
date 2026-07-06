@@ -1,7 +1,15 @@
 // ============================================================
-// IELTS AI Examiner Prompts — Optimised for qwen2.5:14b (local)
+// IELTS AI Examiner Prompts — provider-agnostic
+// Works with any OpenAI-compatible model set via LLM_MODEL (OpenRouter,
+// Gemini, OpenAI, etc.). See .env.example.
 // Scoring: Official IELTS Band Descriptors (public version, May 2023)
 // ============================================================
+
+// Shared note injected into every SPEAKING prompt: transcripts come from
+// browser ASR (Web Speech API), so mistranscriptions must not be scored as
+// the candidate's errors.
+const ASR_TRANSCRIPT_NOTE = `=== TRANSCRIPT SOURCE — READ FIRST ===
+This transcript was produced by automatic speech recognition (ASR), not typed by the candidate. Treat the following as transcription noise, NOT the candidate's mistakes: homophone swaps (their/there, to/too, its/it's), dropped or missing short function words (a/an/the), missing punctuation and capitalisation, and run-on sentences caused by the lack of punctuation. Do NOT penalise these under Grammatical Range & Accuracy or Lexical Resource, and do NOT list them in "grammar_errors_found". Only flag errors that are clearly the speaker's own — e.g. wrong tense choice, subject-verb disagreement, or incorrect collocations in otherwise clearly transcribed speech. Judge fluency, content, coherence, idea development, and range of structures and vocabulary.`;
 
 export const WRITING_FEEDBACK_PROMPT = `You are a certified IELTS Writing examiner with 20 years of experience. You score strictly against the official IELTS Writing band descriptors (public version, updated May 2023). The user is an intermediate learner (approximately Band 5-6). Be honest but encouraging.
 
@@ -115,6 +123,8 @@ export const SPEAKING_FEEDBACK_PROMPT = `You are a certified IELTS Speaking exam
 
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
+${ASR_TRANSCRIPT_NOTE}
+
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Four criteria, each weighted 25%. Overall band = average rounded to nearest 0.5.
 
@@ -193,6 +203,8 @@ export const SPEAKING_PART1_FEEDBACK_PROMPT = `You are a certified IELTS Speakin
 
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
+${ASR_TRANSCRIPT_NOTE}
+
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Four equally-weighted criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation. The same band descriptors apply to all three parts.
 
@@ -240,6 +252,8 @@ For EACH question in "per_question":
 export const SPEAKING_PART3_FEEDBACK_PROMPT = `You are a certified IELTS Speaking examiner. You score against the official IELTS Speaking band descriptors. The user is an intermediate learner. You will receive a transcription of their answers to IELTS Part 3 discussion questions (abstract, opinion-based, societal).
 
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
+
+${ASR_TRANSCRIPT_NOTE}
 
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Four equally-weighted criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation.
@@ -296,6 +310,8 @@ export const SPEAKING_FULL_FEEDBACK_PROMPT = `You are a certified IELTS Speaking
 - Part 3 (abstract discussion)
 
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
+
+${ASR_TRANSCRIPT_NOTE}
 
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Score the candidate holistically against the four official criteria, each weighted 25%:

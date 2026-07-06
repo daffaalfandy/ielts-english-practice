@@ -20,6 +20,12 @@ export interface WritingFeedback {
   };
   strengths: string[];
   improvements: string[];
+  band7_tips?: {
+    task_achievement: string;
+    coherence_cohesion: string;
+    lexical_resource: string;
+    grammar: string;
+  };
   band7_model_answer: string;
   vocabulary_suggestions: {
     original: string;
@@ -36,6 +42,11 @@ export interface SpeakingFeedback {
   vocabulary_comment: string;
   grammar_comment: string;
   coherence_comment: string;
+  band7_tips?: {
+    fluency_coherence: string;
+    lexical_resource: string;
+    grammar: string;
+  };
   band7_model_answer: string;
   useful_phrases: string[];
   grammar_errors_found: { error: string; correction: string }[];
@@ -49,6 +60,7 @@ export interface SpeakingPart1Feedback {
   per_question: {
     question: string;
     brief_comment: string;
+    band7_tip?: string;
     band7_model_answer: string;
   }[];
   natural_phrases_to_use: string[];
@@ -64,6 +76,7 @@ export interface SpeakingPart3Feedback {
   per_question: {
     question: string;
     idea_development_comment: string;
+    band7_tip?: string;
     band7_model_answer: string;
   }[];
   discourse_markers_to_use: string[];
@@ -78,6 +91,11 @@ export interface SpeakingFullFeedback {
     lexical_resource: number;
     grammar: number;
     pronunciation_note: string;
+  };
+  band7_tips?: {
+    fluency_coherence: string;
+    lexical_resource: string;
+    grammar: string;
   };
   strengths: string[];
   improvements: string[];
