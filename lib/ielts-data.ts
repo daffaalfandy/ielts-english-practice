@@ -1440,6 +1440,169 @@ export const writingPrompts: WritingPrompt[] = [
     },
   },
   {
+    id: "t1-29",
+    task: 1,
+    prompt:
+      "The bar chart below shows the reasons people in one country gave for choosing where to go on holiday in 2022. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "Main reason for choosing a holiday destination (2022)",
+      yAxisLabel: "Respondents (%)",
+      series: ["Under 30", "30–50", "Over 50"],
+      data: [
+        { category: "Cost", "Under 30": 42, "30–50": 30, "Over 50": 18 },
+        { category: "Climate", "Under 30": 20, "30–50": 26, "Over 50": 34 },
+        { category: "Culture & history", "Under 30": 12, "30–50": 18, "Over 50": 28 },
+        { category: "Nightlife", "Under 30": 18, "30–50": 8, "Over 50": 3 },
+        { category: "Family-friendly", "Under 30": 8, "30–50": 18, "Over 50": 17 },
+      ],
+    },
+  },
+  {
+    id: "t1-30",
+    task: 1,
+    prompt:
+      "The line graph below shows the unemployment rate in three countries between 2008 and 2022. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "line",
+      title: "Unemployment rate (%) — 2008 to 2022",
+      yAxisLabel: "Unemployment rate (%)",
+      xAxisLabel: "Year",
+      series: ["Spain", "Canada", "South Korea"],
+      data: [
+        { period: "2008", Spain: 11.3, Canada: 6.1, "South Korea": 3.2 },
+        { period: "2011", Spain: 21.4, Canada: 7.5, "South Korea": 3.4 },
+        { period: "2014", Spain: 24.4, Canada: 6.9, "South Korea": 3.5 },
+        { period: "2017", Spain: 17.2, Canada: 6.3, "South Korea": 3.7 },
+        { period: "2020", Spain: 15.5, Canada: 9.6, "South Korea": 4.0 },
+        { period: "2022", Spain: 12.9, Canada: 5.3, "South Korea": 2.9 },
+      ],
+    },
+  },
+  {
+    id: "t1-31",
+    task: 1,
+    prompt:
+      "The table below gives information about the average number of hours per week that people in four age groups spent on different leisure activities in one country. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "table",
+      title: "Average weekly hours spent on leisure activities, by age group",
+      columns: ["Activity", "16–24", "25–44", "45–64", "65+"],
+      rows: [
+        ["Watching TV / streaming", 14, 12, 16, 22],
+        ["Social media", 18, 11, 5, 2],
+        ["Exercise / sport", 6, 5, 4, 3],
+        ["Reading", 3, 4, 6, 9],
+        ["Socialising in person", 9, 7, 6, 5],
+      ],
+    },
+  },
+  {
+    id: "t1-32",
+    task: 1,
+    prompt:
+      "The two pie charts below show how people in one country accessed news in 2010 and 2022. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "pie",
+      title: "Main source of news — 2010 vs 2022",
+      series: [
+        {
+          label: "2010",
+          data: [
+            { name: "Television", value: 40 },
+            { name: "Newspapers", value: 28 },
+            { name: "Radio", value: 14 },
+            { name: "Websites", value: 15 },
+            { name: "Social media", value: 3 },
+          ],
+        },
+        {
+          label: "2022",
+          data: [
+            { name: "Television", value: 24 },
+            { name: "Newspapers", value: 9 },
+            { name: "Radio", value: 8 },
+            { name: "Websites", value: 25 },
+            { name: "Social media", value: 34 },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-33",
+    task: 1,
+    prompt:
+      "The diagram below shows the stages in the production of chocolate, from the cocoa tree to the finished bar. Summarise the information by selecting and reporting the main features.",
+    minWords: 150,
+    visualData: {
+      type: "process",
+      title: "How chocolate is produced",
+      layout: "linear",
+      steps: [
+        {
+          label: "Harvesting",
+          description:
+            "Ripe pods are cut from cocoa trees by hand and split open to remove the beans.",
+          icon: "Leaf",
+        },
+        {
+          label: "Fermentation",
+          description:
+            "The beans and pulp are covered and left to ferment for several days, developing flavour.",
+          icon: "FlaskConical",
+        },
+        {
+          label: "Drying",
+          description:
+            "Fermented beans are spread out and sun-dried for one to two weeks.",
+          icon: "Sun",
+        },
+        {
+          label: "Roasting",
+          description:
+            "Dried beans are roasted at around 120–150°C to deepen colour and aroma.",
+          icon: "Flame",
+        },
+        {
+          label: "Grinding",
+          description:
+            "Roasted beans are shelled and ground into a thick paste called cocoa liquor.",
+          icon: "Cog",
+        },
+        {
+          label: "Moulding",
+          description:
+            "Sugar and milk are blended in, and the mixture is poured into moulds and cooled into bars.",
+          icon: "Package",
+        },
+      ],
+    },
+  },
+  {
+    id: "t1-34",
+    task: 1,
+    prompt:
+      "The bar chart below shows how a typical household in one city disposed of its waste in 2005, 2015, and 2022. Summarise the information by selecting and reporting the main features, and make comparisons where relevant.",
+    minWords: 150,
+    visualData: {
+      type: "bar",
+      title: "Household waste disposal by method (% of total waste)",
+      yAxisLabel: "Share of household waste (%)",
+      stacked: true,
+      series: ["Landfill", "Recycling", "Composting", "Incineration"],
+      data: [
+        { category: "2005", Landfill: 62, Recycling: 20, Composting: 8, Incineration: 10 },
+        { category: "2015", Landfill: 44, Recycling: 33, Composting: 15, Incineration: 8 },
+        { category: "2022", Landfill: 28, Recycling: 41, Composting: 24, Incineration: 7 },
+      ],
+    },
+  },
+  {
     id: "t2-1",
     task: 2,
     prompt:
@@ -1633,6 +1796,90 @@ export const writingPrompts: WritingPrompt[] = [
     task: 2,
     prompt:
       "Some people think that international sporting events help to promote peace and understanding between countries, while others believe they create tension and rivalry. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-29",
+    task: 2,
+    prompt:
+      "Some people believe that protecting the environment is the responsibility of individuals, while others argue that it should be handled by governments and large companies. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-30",
+    task: 2,
+    prompt:
+      "Some people think that formal examinations are the best way to assess a student's ability, while others believe that continuous assessment throughout the year is more effective. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-31",
+    task: 2,
+    prompt:
+      "Some people believe that governments should spend money supporting the arts, such as music and theatre, while others feel this money would be better spent on essential public services. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-32",
+    task: 2,
+    prompt:
+      "In many countries, elderly people are increasingly being cared for in nursing homes rather than by their own families. Why is this happening, and do you think it is a positive or negative development?",
+    minWords: 250,
+  },
+  {
+    id: "t2-33",
+    task: 2,
+    prompt:
+      "Some people think that governments should place a high tax on unhealthy foods and sugary drinks in order to improve public health. To what extent do you agree or disagree?",
+    minWords: 250,
+  },
+  {
+    id: "t2-34",
+    task: 2,
+    prompt:
+      "An increasing number of students are choosing to study online rather than attend traditional classrooms. Do the advantages of online learning outweigh the disadvantages?",
+    minWords: 250,
+  },
+  {
+    id: "t2-35",
+    task: 2,
+    prompt:
+      "The amount of plastic waste produced around the world continues to grow every year. What are the main causes of this problem, and what measures could be taken to reduce it?",
+    minWords: 250,
+  },
+  {
+    id: "t2-36",
+    task: 2,
+    prompt:
+      "Some people believe that using animals in scientific and medical research is cruel and should be banned, while others argue that it is necessary for human progress. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-37",
+    task: 2,
+    prompt:
+      "In many families today, both parents work full-time. What effect does this have on children, and what can be done to support family life?",
+    minWords: 250,
+  },
+  {
+    id: "t2-38",
+    task: 2,
+    prompt:
+      "Some people think that governments should be able to control and restrict the information available on the internet, while others believe access to information should be completely free. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-39",
+    task: 2,
+    prompt:
+      "Some people argue that economic growth is the only effective way to end poverty, while others believe it causes serious harm to the environment. Discuss both views and give your own opinion.",
+    minWords: 250,
+  },
+  {
+    id: "t2-40",
+    task: 2,
+    prompt:
+      "In many cities, the number of crimes committed by young people is increasing. What do you think are the causes of this, and what solutions can you suggest?",
     minWords: 250,
   },
 ];
@@ -2001,6 +2248,127 @@ export const speakingCueCards: SpeakingCueCard[] = [
     ],
     theme: "skill",
   },
+  {
+    id: "s34",
+    topic: "Describe a time when you were late for something important.",
+    bulletPoints: [
+      "When it happened",
+      "What you were late for",
+      "Why you were late",
+      "Explain how you felt about being late",
+    ],
+    theme: "experience",
+  },
+  {
+    id: "s35",
+    topic: "Describe a city you would like to live in.",
+    bulletPoints: [
+      "Which city it is",
+      "Where it is located",
+      "What you know about it",
+      "Explain why you would like to live there",
+    ],
+    theme: "place",
+  },
+  {
+    id: "s36",
+    topic: "Describe an older person you admire.",
+    bulletPoints: [
+      "Who the person is",
+      "How you know them",
+      "What they are like",
+      "Explain why you admire this person",
+    ],
+    theme: "person",
+  },
+  {
+    id: "s37",
+    topic: "Describe something you bought recently that you are happy with.",
+    bulletPoints: [
+      "What you bought",
+      "Where you bought it",
+      "Why you decided to buy it",
+      "Explain why you are happy with it",
+    ],
+    theme: "object",
+  },
+  {
+    id: "s38",
+    topic: "Describe a game or sport you played when you were a child.",
+    bulletPoints: [
+      "What the game was",
+      "Who you played it with",
+      "How you played it",
+      "Explain why you enjoyed playing it",
+    ],
+    theme: "activity",
+  },
+  {
+    id: "s39",
+    topic: "Describe a celebration or party that you enjoyed.",
+    bulletPoints: [
+      "What the occasion was",
+      "Where and when it took place",
+      "Who was there",
+      "Explain why you enjoyed it",
+    ],
+    theme: "event",
+  },
+  {
+    id: "s40",
+    topic: "Describe something useful you learned from the internet.",
+    bulletPoints: [
+      "What you learned",
+      "Which website or app you used",
+      "Why you wanted to learn it",
+      "Explain how it has been useful to you",
+    ],
+    theme: "skill",
+  },
+  {
+    id: "s41",
+    topic: "Describe a film or TV programme that made a strong impression on you.",
+    bulletPoints: [
+      "What it was about",
+      "When you watched it",
+      "Who you watched it with",
+      "Explain why it made such an impression on you",
+    ],
+    theme: "media",
+  },
+  {
+    id: "s42",
+    topic: "Describe a meal that you particularly enjoyed.",
+    bulletPoints: [
+      "What the meal was",
+      "Where you had it",
+      "Who you were with",
+      "Explain why you enjoyed it so much",
+    ],
+    theme: "food",
+  },
+  {
+    id: "s43",
+    topic: "Describe a decision you made that you later regretted.",
+    bulletPoints: [
+      "What the decision was",
+      "When you made it",
+      "Why you made that choice",
+      "Explain why you later regretted it",
+    ],
+    theme: "experience",
+  },
+  {
+    id: "s44",
+    topic: "Describe a plan you have to improve your health or fitness.",
+    bulletPoints: [
+      "What the plan is",
+      "When you want to start it",
+      "How you intend to do it",
+      "Explain why this plan is important to you",
+    ],
+    theme: "goal",
+  },
 ];
 
 export const speakingPart1Topics: SpeakingPart1TopicSet[] = [
@@ -2124,6 +2492,86 @@ export const speakingPart1Topics: SpeakingPart1TopicSet[] = [
       "Do you think sleep is important for health?",
     ],
   },
+  {
+    id: "p1-family",
+    topic: "Family",
+    questions: [
+      "Do you have a large or a small family?",
+      "Who are you closest to in your family?",
+      "How much time do you spend with your family?",
+      "Do families in your country tend to live close together?",
+    ],
+  },
+  {
+    id: "p1-neighbours",
+    topic: "Neighbours & neighbourhood",
+    questions: [
+      "Do you know your neighbours well?",
+      "What do you like about the area you live in?",
+      "Are your neighbours generally friendly?",
+      "How could your neighbourhood be improved?",
+    ],
+  },
+  {
+    id: "p1-animals",
+    topic: "Animals & pets",
+    questions: [
+      "Do you have any pets, or did you have one as a child?",
+      "Are pets popular in your country?",
+      "What is your favourite animal?",
+      "Do you think children should be taught about animals?",
+    ],
+  },
+  {
+    id: "p1-shopping",
+    topic: "Shopping",
+    questions: [
+      "Do you enjoy shopping?",
+      "Do you prefer shopping in stores or online?",
+      "How often do you go shopping?",
+      "Has the way you shop changed in recent years?",
+    ],
+  },
+  {
+    id: "p1-photos",
+    topic: "Photographs",
+    questions: [
+      "Do you like taking photographs?",
+      "What kind of photos do you usually take?",
+      "Do you prefer taking photos or being in them?",
+      "Do you keep printed photos or only digital ones?",
+    ],
+  },
+  {
+    id: "p1-transport",
+    topic: "Public transport",
+    questions: [
+      "How do you usually travel around your city?",
+      "Do you often use public transport?",
+      "What are the advantages of public transport?",
+      "How could public transport be improved where you live?",
+    ],
+  },
+  {
+    id: "p1-routine",
+    topic: "Daily routine",
+    questions: [
+      "What does a typical day look like for you?",
+      "Are you a morning person or a night person?",
+      "Has your daily routine changed recently?",
+      "Is there anything you would like to change about your routine?",
+    ],
+  },
+  {
+    id: "p1-art",
+    topic: "Art",
+    questions: [
+      "Do you enjoy art?",
+      "Did you learn to draw or paint at school?",
+      "Have you ever visited an art gallery?",
+      "Do you think art is important for children to learn?",
+    ],
+  },
 ];
 
 export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
@@ -2133,6 +2581,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "What are the downsides of popular places becoming too crowded?",
     "Do you think people appreciate their own country less than foreign destinations?",
     "How can cities be made more attractive for both residents and visitors?",
+    "Should there be limits on the number of tourists allowed at popular sites?",
+    "Do you think virtual tours will ever replace real travel?",
   ],
   person: [
     "What qualities make someone a positive influence on others?",
@@ -2140,6 +2590,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "How does family influence a person's development compared with friends?",
     "Can someone famous still be a good role model if they make mistakes publicly?",
     "Is it better to have one strong mentor or many casual influences?",
+    "Should parents try to be friends with their children, or keep some authority?",
+    "Why do people admire celebrities they have never met?",
   ],
   object: [
     "How have everyday objects changed in the last twenty years?",
@@ -2147,6 +2599,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "Is it better to own many things or live more simply?",
     "How is technology changing what we consider 'essential' possessions?",
     "Why do some old-fashioned objects remain popular despite newer alternatives?",
+    "Does advertising make people want things they do not really need?",
+    "Is a 'throwaway culture' a serious problem in modern society?",
   ],
   event: [
     "Why do certain events stay in our memory for a long time?",
@@ -2154,6 +2608,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "Do you think traditional events are losing their meaning?",
     "How has social media changed the way people experience events?",
     "Are private family events more meaningful than large public ones?",
+    "Should governments spend public money on large national celebrations?",
+    "Why do some people spend so much money on events like weddings?",
   ],
   experience: [
     "Do difficult experiences teach us more than easy ones?",
@@ -2161,6 +2617,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "Is it better to try many different things or focus deeply on one area?",
     "How important is it to step outside your comfort zone?",
     "Can other people's experiences be as valuable as our own?",
+    "Do people learn more from success or from failure?",
+    "Is travel one of the best ways to gain new experiences?",
   ],
   skill: [
     "Are practical skills more useful than academic knowledge in today's world?",
@@ -2168,6 +2626,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "Is it easier or harder to learn new skills as we get older?",
     "How has the internet changed the way people learn skills?",
     "Are there any skills that will always be relevant regardless of technological change?",
+    "Should schools focus more on teaching creativity or practical skills?",
+    "Do employers value experience or qualifications more highly?",
   ],
   activity: [
     "Why do people need leisure activities in modern life?",
@@ -2175,6 +2635,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "How has the way people spend their free time changed over the years?",
     "Should governments do more to encourage people to be active?",
     "Do children today have enough opportunities to be physically active?",
+    "Are traditional hobbies being replaced by digital entertainment?",
+    "Should employers give workers more time for leisure?",
   ],
   media: [
     "How has the way people consume media changed in the past decade?",
@@ -2182,6 +2644,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "Is it a problem that people spend so much time on screens?",
     "How does media influence public opinion?",
     "Should media content for young people be more tightly regulated?",
+    "Can we still trust the news we read online?",
+    "How has social media changed the way news spreads?",
   ],
   food: [
     "How important is traditional food to a country's identity?",
@@ -2189,6 +2653,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "Do you think people eat more healthily today than in the past?",
     "Should schools teach cooking as a core subject?",
     "How does the way families share meals affect relationships?",
+    "Should governments do more to discourage unhealthy eating?",
+    "Why are foreign cuisines becoming more popular around the world?",
   ],
   goal: [
     "Why is it important for people to have long-term goals?",
@@ -2196,6 +2662,8 @@ export const speakingPart3Questions: Record<SpeakingTheme, string[]> = {
     "How do cultural expectations shape the goals young people set?",
     "Is it a problem if someone changes their goals often?",
     "Should schools spend more time helping students set personal goals?",
+    "Are people today more ambitious than in the past?",
+    "Is it better to aim high and risk failure, or set realistic goals?",
   ],
 };
 
