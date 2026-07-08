@@ -53,6 +53,7 @@ export function useStream<T>() {
 
         const decoder = new TextDecoder();
         let accumulated = "";
+        let streamError: string | null = null;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -69,6 +70,7 @@ export function useStream<T>() {
               try {
                 const parsed = JSON.parse(data);
                 if (parsed.error) {
+                  streamError = parsed.error;
                   setError(parsed.error);
                   continue;
                 }
@@ -83,12 +85,16 @@ export function useStream<T>() {
           }
         }
 
-        // Try to parse the full accumulated text as JSON (with repair fallback)
-        try {
-          const parsed = parseModelJson<T>(accumulated);
-          setResult(parsed);
-        } catch {
-          setError("Could not parse AI response. Raw output shown below.");
+        // Try to parse the full accumulated text as JSON (with repair fallback).
+        // Skip if the stream reported an error — a parse failure on the empty
+        // accumulator would overwrite the real error message.
+        if (!streamError) {
+          try {
+            const parsed = parseModelJson<T>(accumulated);
+            setResult(parsed);
+          } catch {
+            setError("Could not parse AI response. Raw output shown below.");
+          }
         }
       } catch (err) {
         setError(

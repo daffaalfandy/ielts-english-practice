@@ -1,6 +1,6 @@
 # IELTS English Practice App
 
-AI-powered IELTS practice application for Writing, Speaking, and Grammar — works with any OpenAI-compatible API.
+AI-powered IELTS practice application for Writing, Speaking, and Grammar — powered by Claude on your Claude subscription (Pro/Max), no pay-per-token API key needed.
 
 ## Features
 
@@ -12,7 +12,7 @@ AI-powered IELTS practice application for Writing, Speaking, and Grammar — wor
 ## Prerequisites
 
 - Node.js 20+
-- An API key from any OpenAI-compatible provider (OpenRouter, Perplexity, OpenAI, etc.)
+- A Claude subscription (Pro or Max) with [Claude Code](https://claude.com/claude-code) installed and logged in
 
 ## Quick Start (Local)
 
@@ -20,9 +20,10 @@ AI-powered IELTS practice application for Writing, Speaking, and Grammar — wor
 # 1. Install dependencies
 npm install
 
-# 2. Configure your LLM provider
+# 2. Configure (optional)
 cp .env.example .env.local
-# Edit .env.local — set LLM_API_KEY, LLM_BASE_URL, and LLM_MODEL
+# With Claude Code logged in on this machine, no token is needed —
+# the Agent SDK picks up your login automatically.
 
 # 3. Start the dev server
 npm run dev
@@ -32,15 +33,22 @@ npm run dev
 
 ## Running with Docker
 
-```bash
-# 1. Configure your LLM provider
-cp .env.example .env.local
-# Edit .env.local — set LLM_API_KEY, LLM_BASE_URL, and LLM_MODEL
+The container can't see your host's Claude Code login, so generate a
+long-lived subscription token once:
 
-# 2. Build and start
+```bash
+# 1. Generate a subscription OAuth token (one-time, on the host)
+claude setup-token
+# Copy the sk-ant-oat01-... token it prints
+
+# 2. Configure
+cp .env.example .env.local
+# Edit .env.local — set CLAUDE_CODE_OAUTH_TOKEN to the token from step 1
+
+# 3. Build and start
 docker compose up --build
 
-# 3. Open http://localhost:3000
+# 4. Open http://localhost:3000
 ```
 
 ### Docker commands
@@ -56,7 +64,7 @@ docker compose up --build     # Rebuild after changes
 
 - Next.js 14+ (App Router, TypeScript)
 - Tailwind CSS + shadcn/ui
-- OpenAI SDK (works with any compatible provider)
+- Claude Agent SDK (subscription-billed Claude access)
 - Web Speech API (browser speech-to-text)
 - Recharts (progress charts)
 - localStorage (session history)
@@ -65,14 +73,14 @@ docker compose up --build     # Rebuild after changes
 
 | Variable | Description | Example |
 |---|---|---|
-| `LLM_API_KEY` | Your API key | `sk-...` |
-| `LLM_BASE_URL` | Provider's API base URL | `https://openrouter.ai/api/v1` |
-| `LLM_MODEL` | Model to use | `google/gemini-2.0-flash-001` |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Subscription token from `claude setup-token` (Docker only; not needed for local dev with Claude Code logged in) | `sk-ant-oat01-...` |
+| `CLAUDE_MODEL` | Model override (optional) | `claude-sonnet-5` (default) |
+| `CLAUDE_MAX_CONCURRENT` | Max simultaneous Claude requests (optional) | `3` (default) |
 
-### Provider examples
+### Model options
 
-| Provider | `LLM_BASE_URL` | `LLM_MODEL` |
-|---|---|---|
-| OpenRouter | `https://openrouter.ai/api/v1` | `google/gemini-2.0-flash-001` |
-| Perplexity | `https://api.perplexity.ai` | `sonar-pro` |
-| OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
+| Model | Notes |
+|---|---|
+| `claude-sonnet-5` | Default — strong feedback quality, slow subscription-limit burn |
+| `claude-opus-4-8` | Highest quality, burns weekly limits fastest |
+| `claude-haiku-4-5` | Fastest responses, lighter feedback quality |

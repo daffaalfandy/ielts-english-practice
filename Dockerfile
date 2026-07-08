@@ -27,6 +27,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
+# Claude Agent SDK subprocess needs a writable HOME; point its config/session
+# state at /tmp (tmpfs via docker-compose) so transcripts don't accumulate
+RUN mkdir -p /home/nextjs && chown -R nextjs:nodejs /home/nextjs
+ENV HOME=/home/nextjs
+ENV CLAUDE_CONFIG_DIR=/tmp/claude-config
+
 # Copy only what's needed to run
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
