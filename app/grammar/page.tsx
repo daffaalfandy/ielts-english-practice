@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useStream } from "@/lib/use-stream";
 import { saveSession, type GrammarFeedback } from "@/lib/storage";
+import { categoryLabel } from "@/lib/grammar-taxonomy";
 import {
   CheckSquare,
   Send,
@@ -239,7 +240,7 @@ export default function GrammarPage() {
                                 variant="outline"
                                 className="text-xs mt-1"
                               >
-                                {err.category}
+                                {categoryLabel(err.category)}
                               </Badge>
                             </div>
                           </div>

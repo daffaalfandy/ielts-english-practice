@@ -1,9 +1,10 @@
 // ============================================================
-// IELTS AI Examiner Prompts — provider-agnostic
-// Works with any OpenAI-compatible model set via LLM_MODEL (OpenRouter,
-// Gemini, OpenAI, etc.). See .env.example.
+// IELTS AI Examiner Prompts
+// Run via the Claude Agent SDK (see lib/claude.ts).
 // Scoring: Official IELTS Band Descriptors (public version, May 2023)
 // ============================================================
+
+import { TAXONOMY_PROMPT_BLOCK } from "./grammar-taxonomy";
 
 // Shared note injected into every SPEAKING prompt: transcripts come from
 // browser ASR (Web Speech API), so mistranscriptions must not be scored as
@@ -96,6 +97,8 @@ Task 2 structure: intro (paraphrase + clear thesis) → body 1 (first reason, fu
 
 >>> FINAL CHECK: Count words. Task 1 ≥ 170. Task 2 ≥ 270. If short, extend before closing the string. <<<
 
+${TAXONOMY_PROMPT_BLOCK}
+
 === OUTPUT JSON SCHEMA ===
 {
   "overall_band": <number, 0.5 increments 1-9, average of four scores rounded to nearest 0.5>,
@@ -116,6 +119,9 @@ Task 2 structure: intro (paraphrase + clear thesis) → body 1 (first reason, fu
   "band7_model_answer": <string, complete Band 7 model answer. Use \\n\\n between paragraphs. MUST meet word-count targets.>,
   "vocabulary_suggestions": [
     { "original": <string>, "better": <string>, "example": <string> }
+  ],
+  "grammar_errors_found": [
+    { "error": <string, the candidate's exact wording>, "correction": <string>, "category": <string, one canonical category from the list above>, "subtype": <string, tense subtype if category is "tense"; omit otherwise> }
   ]
 }`;
 
@@ -124,6 +130,8 @@ export const SPEAKING_FEEDBACK_PROMPT = `You are a certified IELTS Speaking exam
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
 ${ASR_TRANSCRIPT_NOTE}
+
+${TAXONOMY_PROMPT_BLOCK}
 
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Four criteria, each weighted 25%. Overall band = average rounded to nearest 0.5.
@@ -195,7 +203,7 @@ Register requirements:
   "band7_model_answer": <string, complete 260-320 word Band 7 monologue>,
   "useful_phrases": [<string>, <string>],
   "grammar_errors_found": [
-    { "error": <string>, "correction": <string> }
+    { "error": <string>, "correction": <string>, "category": <string, one canonical category from the list above>, "subtype": <string, tense subtype if category is "tense"; omit otherwise> }
   ]
 }`;
 
@@ -204,6 +212,8 @@ export const SPEAKING_PART1_FEEDBACK_PROMPT = `You are a certified IELTS Speakin
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
 ${ASR_TRANSCRIPT_NOTE}
+
+${TAXONOMY_PROMPT_BLOCK}
 
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Four equally-weighted criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation. The same band descriptors apply to all three parts.
@@ -245,7 +255,7 @@ For EACH question in "per_question":
   ],
   "natural_phrases_to_use": [<string>, <string>],
   "grammar_errors_found": [
-    { "error": <string>, "correction": <string> }
+    { "error": <string>, "correction": <string>, "category": <string, one canonical category from the list above>, "subtype": <string, tense subtype if category is "tense"; omit otherwise> }
   ]
 }`;
 
@@ -254,6 +264,8 @@ export const SPEAKING_PART3_FEEDBACK_PROMPT = `You are a certified IELTS Speakin
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
 ${ASR_TRANSCRIPT_NOTE}
+
+${TAXONOMY_PROMPT_BLOCK}
 
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Four equally-weighted criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation.
@@ -300,7 +312,7 @@ For EACH question in "per_question":
   ],
   "discourse_markers_to_use": [<string>, <string>],
   "grammar_errors_found": [
-    { "error": <string>, "correction": <string> }
+    { "error": <string>, "correction": <string>, "category": <string, one canonical category from the list above>, "subtype": <string, tense subtype if category is "tense"; omit otherwise> }
   ]
 }`;
 
@@ -312,6 +324,8 @@ export const SPEAKING_FULL_FEEDBACK_PROMPT = `You are a certified IELTS Speaking
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
 ${ASR_TRANSCRIPT_NOTE}
+
+${TAXONOMY_PROMPT_BLOCK}
 
 === OFFICIAL IELTS SPEAKING ASSESSMENT ===
 Score the candidate holistically against the four official criteria, each weighted 25%:
@@ -358,7 +372,7 @@ Band 7 benchmark (across all parts):
   "strengths": [<string>, <string>],
   "improvements": [<string>, <string>],
   "top_grammar_errors": [
-    { "error": <string>, "correction": <string> }
+    { "error": <string>, "correction": <string>, "category": <string, one canonical category from the list above>, "subtype": <string, tense subtype if category is "tense"; omit otherwise> }
   ],
   "next_focus": <string>
 }`;
@@ -366,6 +380,10 @@ Band 7 benchmark (across all parts):
 export const GRAMMAR_DRILLS_PROMPT = `You are an English grammar tutor. You will receive a list of grammar categories the student needs to practice, plus recent example errors they have made.
 
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
+
+${TAXONOMY_PROMPT_BLOCK}
+
+The focus categories you receive are drawn from this taxonomy. Set each exercise's "category" to the canonical category it drills. When a focus category is "tense", vary the exercises across different tense subtypes (past simple vs present perfect, future forms, conditionals, tense consistency) rather than repeating one.
 
 Generate exactly the requested number of exercises targeting those categories. Mix exercise types:
 - Fill-in-the-blank: sentence contains "___" where the answer goes
@@ -397,6 +415,8 @@ export const GRAMMAR_CHECK_PROMPT = `You are an English grammar expert helping a
 
 IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
 
+${TAXONOMY_PROMPT_BLOCK}
+
 === OUTPUT JSON SCHEMA ===
 {
   "corrected_text": <string, full corrected version of the input>,
@@ -405,9 +425,35 @@ IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the
       "original": <string>,
       "correction": <string>,
       "rule": <string>,
-      "category": <string>
+      "category": <string, one canonical category from the list above>,
+      "subtype": <string, tense subtype if category is "tense"; omit otherwise>
     }
   ],
   "overall_comment": <string>,
   "common_error_patterns": [<string>, <string>]
+}`;
+
+export const WEAKNESS_COACH_PROMPT = `You are an expert IELTS grammar coach. You will receive a statistical summary of one student's grammar mistakes aggregated across all their writing, speaking, and grammar-check practice — a list of error categories with how often each occurred, plus representative real examples of their mistakes (their wording → the correction).
+
+Your job: diagnose the SINGLE most important weakness to fix next and give a concrete, motivating study plan. Base your judgement on the data — frequency matters, but so does impact on IELTS band score (tense and subject-verb agreement errors hurt Grammatical Range & Accuracy the most). Reference the student's own examples so the advice feels personal.
+
+IMPORTANT: Respond with ONLY valid JSON. Do not add any text before or after the JSON object. Do not use markdown code blocks. Output the raw JSON directly.
+
+Guidance:
+- "top_weakness.category" MUST be one of the canonical categories present in the input data.
+- "why" explains, in 2-3 sentences, why this is the highest-leverage fix, citing the student's frequency and 1-2 of their real examples.
+- "ranked_weaknesses" lists their top 3-4 categories worst-first, each with a one-line note on the pattern you see.
+- "study_plan" is 3-4 short, concrete, actionable steps targeting the top weakness (e.g. a rule to memorise, a drill to run, a habit to apply when writing). Practical, not generic.
+- "drill_focus" is the exact category string to pre-load into the grammar drills feature (same as top_weakness.category).
+- "encouragement" is one warm, honest sentence — acknowledge progress or effort without empty praise.
+
+=== OUTPUT JSON SCHEMA ===
+{
+  "top_weakness": { "category": <string>, "why": <string> },
+  "ranked_weaknesses": [
+    { "category": <string>, "note": <string> }
+  ],
+  "study_plan": [<string>, <string>, <string>],
+  "drill_focus": <string>,
+  "encouragement": <string>
 }`;

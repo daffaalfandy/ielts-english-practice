@@ -1,5 +1,15 @@
 import type { SpeakingTheme } from "./ielts-data";
 
+// A single grammar mistake surfaced by any feedback route. `category` (canonical
+// taxonomy, see lib/grammar-taxonomy.ts) and `subtype` are optional for
+// back-compat with sessions stored before the taxonomy existed.
+export interface GrammarErrorItem {
+  error: string;
+  correction: string;
+  category?: string;
+  subtype?: string;
+}
+
 export interface WritingSession {
   id: string;
   type: "writing";
@@ -32,6 +42,7 @@ export interface WritingFeedback {
     better: string;
     example: string;
   }[];
+  grammar_errors_found?: GrammarErrorItem[];
 }
 
 // === Speaking feedback variants ===
@@ -49,7 +60,7 @@ export interface SpeakingFeedback {
   };
   band7_model_answer: string;
   useful_phrases: string[];
-  grammar_errors_found: { error: string; correction: string }[];
+  grammar_errors_found: GrammarErrorItem[];
 }
 
 export interface SpeakingPart1Feedback {
@@ -64,7 +75,7 @@ export interface SpeakingPart1Feedback {
     band7_model_answer: string;
   }[];
   natural_phrases_to_use: string[];
-  grammar_errors_found: { error: string; correction: string }[];
+  grammar_errors_found: GrammarErrorItem[];
 }
 
 export interface SpeakingPart3Feedback {
@@ -80,7 +91,7 @@ export interface SpeakingPart3Feedback {
     band7_model_answer: string;
   }[];
   discourse_markers_to_use: string[];
-  grammar_errors_found: { error: string; correction: string }[];
+  grammar_errors_found: GrammarErrorItem[];
 }
 
 export interface SpeakingFullFeedback {
@@ -99,7 +110,7 @@ export interface SpeakingFullFeedback {
   };
   strengths: string[];
   improvements: string[];
-  top_grammar_errors: { error: string; correction: string }[];
+  top_grammar_errors: GrammarErrorItem[];
   next_focus: string;
 }
 
@@ -189,6 +200,7 @@ export interface GrammarFeedback {
     correction: string;
     rule: string;
     category: string;
+    subtype?: string;
   }[];
   overall_comment: string;
   common_error_patterns: string[];

@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { useStream } from "@/lib/use-stream";
 import { aggregateErrors } from "@/lib/error-aggregation";
+import { categoryLabel } from "@/lib/grammar-taxonomy";
 import {
   saveSession,
   type DrillExercise,
@@ -74,6 +75,18 @@ export default function GrammarDrillsPage() {
   // Load focus list on mount
   useEffect(() => {
     const agg = aggregateErrors();
+
+    // Deep-link from the weakness coach / dashboard: ?focus=<category> drills a
+    // single category on demand, even with no prior history (cold-start).
+    const focusParam = new URLSearchParams(window.location.search).get("focus");
+    if (focusParam) {
+      const match = agg.byCategory.find((c) => c.category === focusParam);
+      setFocusCategories([focusParam]);
+      setRecentExamples(match ? match.recentExamples.slice(0, 8) : []);
+      setPhase("ready");
+      return;
+    }
+
     if (agg.byCategory.length === 0) {
       setPhase("no-history");
       return;
@@ -257,7 +270,7 @@ export default function GrammarDrillsPage() {
                       key={c}
                       className="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 ring-1 ring-amber-400/30 text-amber-300"
                     >
-                      {c}
+                      {categoryLabel(c)}
                     </span>
                   ))}
                 </div>
@@ -305,7 +318,7 @@ export default function GrammarDrillsPage() {
                   {current.sentence}
                 </CardTitle>
                 <CardDescription className="mt-1 text-xs">
-                  {current.category}
+                  {categoryLabel(current.category)}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">

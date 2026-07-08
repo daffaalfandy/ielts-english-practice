@@ -21,6 +21,8 @@ import {
   type PracticeSession,
 } from "@/lib/storage";
 import { aggregateErrors, type ErrorAggregation } from "@/lib/error-aggregation";
+import { categoryLabel } from "@/lib/grammar-taxonomy";
+import { WeaknessCoach } from "@/components/WeaknessCoach";
 import {
   LineChart,
   Line,
@@ -267,6 +269,9 @@ export default function DashboardPage() {
             </Card>
           )}
 
+          {/* AI weakness coach — diagnoses the top weakness from full history */}
+          {errorAgg.byCategory.length > 0 && <WeaknessCoach agg={errorAgg} />}
+
           {/* Grammar focus — cross-session aggregation with drill CTA */}
           {topErrors.length > 0 && (
             <Card className="relative overflow-hidden bg-card/60 backdrop-blur-xl ring-1 ring-white/10">
@@ -300,7 +305,7 @@ export default function DashboardPage() {
                       key={category}
                       className="flex items-center justify-between gap-4"
                     >
-                      <span className="text-sm">{category}</span>
+                      <span className="text-sm">{categoryLabel(category)}</span>
                       <div className="flex items-center gap-2">
                         <div className="w-28 h-2 bg-white/5 ring-1 ring-white/5 rounded-full overflow-hidden">
                           <div
